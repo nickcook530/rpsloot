@@ -1,0 +1,12 @@
+images {
+  image: "/assets/game_icons/sword_lv1.png"
+}
+images {
+  image: "/assets/game_icons/scroll_lv1.png"
+}
+images {
+  image: "/assets/game_icons/shield_lv1.png"
+}
+margin: 0
+extrude_borders: 2
+inner_padding: 0

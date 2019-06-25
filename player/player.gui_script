@@ -1,0 +1,46 @@
+function init(self)
+	msg.post(".", "acquire_input_focus")
+	print("player GUI init")
+	--msg.post("@render:", "use_fixed_fit_projection", { near = -1, far = 1 })
+end
+
+function on_input(self, action_id, action)
+	local shield_node = gui.get_node("player_shield")
+	local scroll_node = gui.get_node("player_scroll")
+	local sword_node = gui.get_node("player_sword")
+	if action_id == hash("touch") and action.released then
+		if gui.pick_node(shield_node, action.x, action.y) then
+			print("You touched the shield")
+		elseif gui.pick_node(scroll_node, action.x, action.y) then
+			print("You touched the scroll")
+		elseif gui.pick_node(sword_node, action.x, action.y) then
+			print("You touched the sword")
+		else
+			print("You touched a random spot")
+		end
+	end
+
+		if action_id == hash("space") then
+		print("player gui spacebar")
+	end
+end
+
+function final(self)
+	-- Return input focus when the object is deleted
+	--msg.post(".", "release_input_focus")
+end
+
+function update(self, dt)
+	-- Add update code here
+	-- Remove this function if not needed
+end
+
+function on_message(self, message_id, message, sender)
+	-- Add message-handling code here
+	-- Remove this function if not needed
+end
+
+function on_reload(self)
+	-- Add input-handling code here
+	-- Remove this function if not needed
+end
