@@ -8,19 +8,24 @@ function on_input(self, action_id, action)
 	local shield_node = gui.get_node("player_shield")
 	local scroll_node = gui.get_node("player_scroll")
 	local sword_node = gui.get_node("player_sword")
+	--^maybe eventually move out so it doesn't get every touch?
+	
 	if action_id == hash("touch") and action.released then
 		if gui.pick_node(shield_node, action.x, action.y) then
+			msg.post("main:/enemy#enemy_controller", "shield")
 			print("You touched the shield")
 		elseif gui.pick_node(scroll_node, action.x, action.y) then
+			msg.post("main:/enemy#enemy_controller", "scroll")
 			print("You touched the scroll")
 		elseif gui.pick_node(sword_node, action.x, action.y) then
+			msg.post("main:/enemy#enemy_controller", "sword")
 			print("You touched the sword")
 		else
 			print("You touched a random spot")
 		end
 	end
 
-		if action_id == hash("space") then
+	if action_id == hash("space") then
 		print("player gui spacebar")
 	end
 end

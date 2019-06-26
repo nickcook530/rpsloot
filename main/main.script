@@ -1,9 +1,10 @@
 require "items.item_creator"
 
 function init(self)
+	msg.post("@render:", "use_fixed_fit_projection", { near = -1, far = 1 }) --https://www.defold.com/manuals/render/
 	collectionfactory.create("/player#playerfactory")
-	print("main.script init")
-	msg.post("@render:", "use_fixed_fit_projection", { near = -1, far = 1 })
+	math.randomseed(socket.gettime()) math.random(100) math.random(100) --set randomseed then discard first few random numbers
+	print("main.script init done")
 end
 
 function final(self)
