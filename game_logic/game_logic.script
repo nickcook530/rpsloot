@@ -1,7 +1,6 @@
 function init(self)
 	-- Add initialization code here
 	-- Remove this function if not needed
-	
 end
 
 function final(self)
@@ -15,11 +14,8 @@ function update(self, dt)
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == hash("sword") then
-		local enemy_move = master_enemy_table[1]:generate_move()
-		print("Enemy uses: " .. enemy_move)
-		return enemy_move
-	end
+	-- Add message-handling code here
+	-- Remove this function if not needed
 end
 
 function on_input(self, action_id, action)

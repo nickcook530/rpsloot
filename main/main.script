@@ -1,4 +1,7 @@
 require "items.item_creator"
+require "player.player_creator"
+require "enemies.enemy_creator"
+require "game_logic.game_logic"
 
 function init(self)
 	msg.post("@render:", "use_fixed_fit_projection", { near = -1, far = 1 }) --https://www.defold.com/manuals/render/
