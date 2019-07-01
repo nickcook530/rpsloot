@@ -1,53 +1,39 @@
 function init(self)
 	msg.post(".", "acquire_input_focus")
-	self.player_move_positions = {vmath.vector3(100, 50, 0), vmath.vector3(322, 50, 0), vmath.vector3(540, 50, 0)}
 
-	--[[
-	local player_move_1_node = gui.get_node("player_move_1")
-	local player_move_2_node = gui.get_node("player_move_2")
-	local player_move_3_node = gui.get_node("player_move_3")
-	self.player_move_parent_nodes = {player_move_1_node, player_move_2_node, player_move_3_node}
-	pprint(self.player_move_parent_nodes)
-	print(gui.get_position(self.player_move_parent_nodes[1]))
-	--]]
-	
+	self.player_move_positions = {vmath.vector3(100, 50, 0), vmath.vector3(322, 50, 0), vmath.vector3(540, 50, 0)}
 	self.move_options = {}
 
-	for i=1, 3 do
-		local player_move = player:generate_move_option()
-		local move_tree = gui.clone_tree(gui.get_node("player_move"))
-		gui.set_text(move_tree[hash("move_text")], player_move)
-		gui.set_texture(move_tree[hash("move_image")], "player")
-		gui.play_flipbook(move_tree[hash("move_image")], player_move)
-		gui.set_position(move_tree[hash("player_move")], self.player_move_positions[i])
-		
-		table.insert(self.move_options, move_tree)
-		--pprint(self.move_options[i])
+	function generate_player_move_nodes()
+		for i=1, 3 do
+			local player_move = player:generate_move_option()
+			local move_tree = gui.clone_tree(gui.get_node("player_move"))
+			gui.set_text(move_tree[hash("move_text")], player_move)
+			gui.set_texture(move_tree[hash("move_image")], "player")
+			gui.play_flipbook(move_tree[hash("move_image")], player_move)
+			gui.set_position(move_tree[hash("player_move")], self.player_move_positions[i])
+			move_tree["move_type"] = player_move
+			table.insert(self.move_options, move_tree)
+			pprint(move_tree)
+		end
 	end
+	generate_player_move_nodes()
+
 	print("player gui init done")
 end
 
 function on_input(self, action_id, action)
-	local shield_node = gui.get_node("player_shield")
-	local scroll_node = gui.get_node("player_scroll")
-	local sword_node = gui.get_node("player_sword")
-	--^maybe eventually move out so it doesn't get every touch?
-	
 	if action_id == hash("touch") and action.released then
-		if gui.pick_node(shield_node, action.x, action.y) then
-			msg.post("main:/enemy#enemy_controller", "shield")
-			print("You touched the shield")
-		elseif gui.pick_node(scroll_node, action.x, action.y) then
-			msg.post("main:/enemy#enemy_controller", "scroll")
-			print("You touched the scroll")
-		elseif gui.pick_node(sword_node, action.x, action.y) then
-			msg.post("main:/enemy#enemy_controller", "sword")
-			print("You touched the sword")
-		else
-			print("You touched a random spot")
+		for i=1,3 do
+			local selected_node_tree = self.move_options[i]
+			local player_move_selected = selected_node_tree[hash("player_move")]
+			if gui.pick_node(player_move_selected, action.x, action.y) then
+				msg.post("main:/enemy#enemy_controller", "move")
+				print("You touched the " .. selected_node_tree["move_type"])
+			end
 		end
 	end
-
+	
 	if action_id == hash("space") then
 		print("player gui spacebar")
 	end
