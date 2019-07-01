@@ -4,9 +4,9 @@ require "enemies.enemy_creator"
 require "game_logic.game_logic"
 
 function init(self)
+	math.randomseed(socket.gettime()) math.random(100) math.random(100) --set randomseed then discard first few random numbers
 	msg.post("@render:", "use_fixed_fit_projection", { near = -1, far = 1 }) --https://www.defold.com/manuals/render/
 	collectionfactory.create("/player#playerfactory")
-	math.randomseed(socket.gettime()) math.random(100) math.random(100) --set randomseed then discard first few random numbers
 	print("main.script init done")
 end
 
