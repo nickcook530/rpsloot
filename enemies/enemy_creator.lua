@@ -15,6 +15,18 @@ function enemy.new(name, health, shield, shield_range_upper, scroll, scroll_rang
 		special = special, special_range_upper = special_range_upper}, enemy)
 end
 
+function enemy:generate_move_option()
+	local move_number = math.random(10)
+	print("enemy move number: " .. move_number)
+	if move_number <= self.shield_range_upper then
+		return "shield"
+	elseif move_number > self.shield_range_upper and move_number <= self.scroll_range_upper then
+		return "scroll"
+	elseif move_number > self.scroll_range_upper and move_number <= self.sword_range_upper then
+		return "sword"
+	end
+end
+
 function enemy:generate_move()
 	local move_number = math.random(100)
 	if move_number <= self.shield_range_upper then
