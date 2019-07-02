@@ -1,24 +1,24 @@
+function generate_enemy_move_nodes(self)
+	for i=1, 3 do
+		local enemy_move = master_enemy_table[1]:generate_move_option()
+		local move_tree = gui.clone_tree(gui.get_node("enemy_move"))
+		gui.set_text(move_tree[hash("move_text")], enemy_move)
+		gui.set_texture(move_tree[hash("move_image")], "enemy_items")
+		gui.play_flipbook(move_tree[hash("move_image")], enemy_move)
+		gui.set_position(move_tree[hash("enemy_move")], self.move_positions[i])
+		move_tree["move_type"] = enemy_move
+		table.insert(self.move_options, move_tree)
+		--pprint(move_tree)
+	end
+end
+
 function init(self)
 	msg.post(".", "acquire_input_focus")
 	
 	self.move_positions = {vmath.vector3(100, 450, 0), vmath.vector3(322, 450, 0), vmath.vector3(540, 450, 0)}
 	self.move_options = {}
 
-	function generate_enemy_move_nodes()
-		for i=1, 3 do
-			local enemy_move = master_enemy_table[1]:generate_move_option()
-			local move_tree = gui.clone_tree(gui.get_node("enemy_move"))
-			gui.set_text(move_tree[hash("move_text")], enemy_move)
-			gui.set_texture(move_tree[hash("move_image")], "enemy_items")
-			gui.play_flipbook(move_tree[hash("move_image")], enemy_move)
-			gui.set_position(move_tree[hash("enemy_move")], self.move_positions[i])
-			move_tree["move_type"] = enemy_move
-			table.insert(self.move_options, move_tree)
-			--pprint(move_tree)
-		end
-	end
-
-	generate_enemy_move_nodes()
+	generate_enemy_move_nodes(self)
 
 	print("enemy gui init done")
 end
