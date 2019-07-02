@@ -1,5 +1,6 @@
 [project]
 title = RPS
+dependencies = https://github.com/britzl/monarch/archive/master.zip
 
 [bootstrap]
 main_collection = /main/main.collectionc

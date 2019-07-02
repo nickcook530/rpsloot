@@ -95,7 +95,7 @@ embedded_instances {
   }
 }
 embedded_instances {
-  id: "enemy"
+  id: "level_1"
   data: "components {\n"
   "  id: \"enemy_controller\"\n"
   "  component: \"/enemies/enemy_controller.script\"\n"
@@ -111,29 +111,12 @@ embedded_instances {
   "    w: 1.0\n"
   "  }\n"
   "}\n"
-  ""
-  position {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
-}
-embedded_instances {
-  id: "game_logic"
-  data: "components {\n"
-  "  id: \"game_logic\"\n"
-  "  component: \"/game_logic/game_logic.script\"\n"
+  "embedded_components {\n"
+  "  id: \"playerfactory\"\n"
+  "  type: \"collectionfactory\"\n"
+  "  data: \"prototype: \\\"/player/player.collection\\\"\\n"
+  "load_dynamically: false\\n"
+  "\"\n"
   "  position {\n"
   "    x: 0.0\n"
   "    y: 0.0\n"

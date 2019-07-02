@@ -28,10 +28,12 @@ function on_input(self, action_id, action)
 			local selected_node_tree = self.move_options[i]
 			local player_move_selected = selected_node_tree[hash("player_move")]
 			if gui.pick_node(player_move_selected, action.x, action.y) then
-				msg.post("main:/enemy#enemy_controller", "move")
+				--msg.post("main:/enemy#enemy_controller", "move")
 				print("You touched the " .. selected_node_tree["move_type"])
 			end
 		end
+		local enemy_move_selected = master_enemy_table[1]:generate_move()
+		print("Enemy has selected: " .. enemy_move_selected)
 	end
 	
 	if action_id == hash("space") then

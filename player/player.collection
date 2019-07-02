@@ -1,7 +1,7 @@
 name: "default"
 scale_along_z: 0
 embedded_instances {
-  id: "go"
+  id: "player"
   data: "components {\n"
   "  id: \"player\"\n"
   "  component: \"/player/player.gui\"\n"
