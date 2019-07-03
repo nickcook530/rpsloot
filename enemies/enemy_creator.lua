@@ -3,10 +3,11 @@
 -- require "my_directory.my_file"
 -- in any script using the functions.
 
-master_enemy_table = {}
---max_key_master_enemy_table = 1
+local functions = {}
 
-enemy = {}
+local game_enemies = {}
+
+local enemy = {}
 enemy.__index = enemy
 
 function enemy.new(name, health, shield, shield_range_upper, scroll, scroll_range_upper, sword, sword_range_upper, special, special_range_upper)
@@ -15,41 +16,18 @@ function enemy.new(name, health, shield, shield_range_upper, scroll, scroll_rang
 		special = special, special_range_upper = special_range_upper}, enemy)
 end
 
-function enemy:generate_move_option()
-	local move_number = math.random(10)
-	print("enemy move number: " .. move_number)
-	if move_number <= self.shield_range_upper then
-		return "shield"
-	elseif move_number > self.shield_range_upper and move_number <= self.scroll_range_upper then
-		return "scroll"
-	elseif move_number > self.scroll_range_upper and move_number <= self.sword_range_upper then
-		return "sword"
-	end
-end
-
-function enemy:generate_move()
-	local move_number = math.random(100)
-	if move_number <= self.shield_range_upper then
-		return "shield"
-	elseif move_number > self.shield_range_upper and move_number <= self.scroll_range_upper then
-		return "scroll"
-	elseif move_number > self.scroll_range_upper and move_number <= self.sword_range_upper then
-		return "sword"
-	elseif move_number > self.sword_range_upper and move_number <= self.special_range_upper then
-		return "special"
-	end
-end
-
-function create_new_enemy(name, health, shield, shield_range_upper, scroll, scroll_range_upper, sword, sword_range_upper, special, special_range_upper)
+local function create_new_enemy(name, health, shield, shield_range_upper, scroll, scroll_range_upper, sword, sword_range_upper, special, special_range_upper)
 	local enemy_table = enemy.new(name, health, shield, shield_range_upper, scroll, scroll_range_upper, sword, sword_range_upper, special, special_range_upper)
-	table.insert(master_enemy_table, enemy_table)
-	--master_enemy_table[max_key_master_enemy_table] = enemy_table
-	--max_key_master_enemy_table = max_key_master_enemy_table + 1
+	table.insert(game_enemies, enemy_table)
+
 	print(enemy_table["name"] .. " CREATED")
 end
 
-create_new_enemy("Basic Enemy", 3, master_item_table[1], 50, master_item_table[2], 80, master_item_table[3], 100, nil, nil)
+function functions.generate_game_enemies()
+	create_new_enemy("Basic Enemy", 3, nil, 50, nil, 80, nil, 100, nil, nil)
+	return game_enemies
+end
 
---print(master_enemy_table[1]["name"])
+return functions
 
 

@@ -1,25 +1,12 @@
-function generate_player_move_nodes(self)
-	for i=1, 3 do
-		local player_move = player:generate_move_option()
-		local move_tree = gui.clone_tree(gui.get_node("player_move"))
-		gui.set_text(move_tree[hash("move_text")], player[player_move]["name"])
-		gui.set_texture(move_tree[hash("move_image")], "player_items")
-		gui.play_flipbook(move_tree[hash("move_image")], player_move)
-		gui.set_position(move_tree[hash("player_move")], self.move_positions[i])
-		move_tree["move_type"] = player_move
-		table.insert(self.move_options, move_tree)
-		--pprint(move_tree)
-	end
-end
+local gd = require "main.game_data"
+local gf = require "main.game_functions"
+--NEED TO SET PLAYER BASED ON CLASS CHOSEN
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
 
 	self.move_positions = {vmath.vector3(100, 50, 0), vmath.vector3(322, 50, 0), vmath.vector3(540, 50, 0)}
-	self.move_options = {}
-	
-	generate_player_move_nodes(self)
-
+	self.move_options = gf.generate_player_move_nodes(gd.player, self.move_positions)
 	print("player gui init done")
 end
 
@@ -31,7 +18,7 @@ function on_input(self, action_id, action)
 			if gui.pick_node(player_move_selected, action.x, action.y) then
 				--msg.post("main:/enemy#enemy_controller", "move")
 				print("You touched the " .. selected_node_tree["move_type"])
-				local enemy_move_selected = master_enemy_table[1]:generate_move()
+				local enemy_move_selected = gf.select_move({"test1", "test2", "test3"}) --Need to adjust this per level
 				print("Enemy has selected: " .. enemy_move_selected)
 			end
 		end

@@ -1,6 +1,7 @@
-require "items.item_creator"
-require "player.player_creator"
-require "enemies.enemy_creator"
+--require "items.item_creator"
+--require "player.player_creator"
+--require "enemies.enemy_creator"
+local game_data = require "main.game_data"
 local monarch = require "monarch.monarch"
 
 function init(self)
@@ -8,7 +9,7 @@ function init(self)
 	msg.post("@render:", "use_fixed_fit_projection", { near = -1, far = 1 }) --https://www.defold.com/manuals/render/
 	--collectionfactory.create("/player#playerfactory")
 	msg.post("#", "start")
-
+	
 	print("main.script init done")
 end
 

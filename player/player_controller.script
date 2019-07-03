@@ -1,14 +1,8 @@
-local gd = require "main.game_data"
 local gf = require "main.game_functions"
--- NEED TO SET ENEMY PER LEVEL (generic way?)
 
 function init(self)
-	msg.post(".", "acquire_input_focus")
-	
-	self.move_positions = {vmath.vector3(100, 450, 0), vmath.vector3(322, 450, 0), vmath.vector3(540, 450, 0)}
-	self.move_options = gf.generate_enemy_move_nodes(gd.enemies[1], self.move_positions)
-
-	print("enemy gui init done")
+	-- Add initialization code here
+	-- Remove this function if not needed
 end
 
 function final(self)
@@ -32,6 +26,6 @@ function on_input(self, action_id, action)
 end
 
 function on_reload(self)
-	-- Add input-handling code here
+	-- Add reload-handling code here
 	-- Remove this function if not needed
 end
