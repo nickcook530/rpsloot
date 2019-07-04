@@ -15,14 +15,19 @@ end
 
 function on_input(self, action_id, action)
 	if action_id == hash("touch") and action.released then
-		for i=1,3 do
+		for i=1, #self.move_options do
 			local selected_node_tree = self.move_options[i]
 			local player_node_selected = selected_node_tree[hash("player_move")]
 			if gui.pick_node(player_node_selected, action.x, action.y) then
-				self.move_selected = selected_node_tree["move_type"]
+				self.move_selected = selected_node_tree["move_type"] --used in outcome message
 				print("You touched the: " .. selected_node_tree["move_type"])
 				
-				msg.post("level_1:/enemy/enemy#enemy", "select_move", {player_move = selected_node_tree["move_type"]})
+				msg.post("level_1:/enemy/enemy#enemy", "select_move", {["player_move"] = self.move_selected})
+
+
+				--table.remove(self.move_options, i)
+				--table.insert(self.move_options, i, nil)
+				--gui.delete_node(player_node_selected)
 			end
 		end
 	end
@@ -49,7 +54,6 @@ function on_message(self, message_id, message, sender)
 		local player_item = self.player[self.move_selected][message.outcome]
 		local enemy_item = message.enemy_item
 		msg.post(sender, "outcome_actions", {["player_item"] = player_item, ["enemy_item"] = enemy_item})
-		print(message.enemy_item)
 		
 		self.health = self.health - enemy_item.dmg + player_item.heal
 		gui.set_text(gui.get_node("player_health"), "Player health: "..self.health)

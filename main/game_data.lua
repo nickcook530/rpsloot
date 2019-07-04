@@ -21,12 +21,13 @@ if true then -- While in development I'll just recreate each time
 	M.enemies[1].shield = M.items[1]
 	M.enemies[1].scroll = M.items[2]
 	M.enemies[1].sword = M.items[3]
-	pprint(M.enemies[1])
+	M.enemies[1].special = M.items[4]
 	
 	M.player = player_creator.generate_player()
 	M.player.shield = M.items[1]
 	M.player.scroll = M.items[2]
 	M.player.sword = M.items[3]
+	M.player.special = M.items[4]
 	
 	sys.save(my_file_path, M)
 	

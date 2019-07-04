@@ -5,8 +5,8 @@
 
 local functions = {}
 
-local player = {health = 3, shield_range_upper = 30, scroll_range_upper = 60, sword_range_upper = 100, shield = nil, scroll = nil,
-sword = nil, special = nil}
+local player = {health = 3, shield_range_upper = 30, scroll_range_upper = 60, sword_range_upper = 100, special_range_upper = 60,
+shield = nil, scroll = nil, sword = nil, special = nil}
 
 function functions.generate_player()
 	return player

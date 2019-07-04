@@ -7,14 +7,20 @@ local gf = {}
 
 function gf.generate_move_option(character)
 	local move_number = math.random(100)
+	local special_number = math.random(100)
+	local move = nil
 	print("character move number: " .. move_number)
 	if move_number <= character.shield_range_upper then
-		return "shield"
+		move = "shield"
 	elseif move_number > character.shield_range_upper and move_number <= character.scroll_range_upper then
-		return "scroll"
+		move = "scroll"
 	elseif move_number > character.scroll_range_upper and move_number <= character.sword_range_upper then
-		return "sword"
+		move = "sword"
 	end
+	if special_number <= character.special_range_upper then
+		move = "special"
+	end
+	return move
 end
 
 function gf.generate_player_move_nodes(player, move_positions)

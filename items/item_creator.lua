@@ -27,6 +27,7 @@ function functions.generate_game_items()
 	create_new_item("Starter Shield", "shield", 1, 1, 0, nil, 0, 0, nil, 0, 0, nil)
 	create_new_item("Starter Scroll", "scroll", 1, 1, 0, nil, 0, 0, nil, 0, 0, nil)
 	create_new_item("Starter Sword", "sword", 1, 1, 0, nil, 0, 0, nil, 0, 0, nil)
+	create_new_item("Test Special", "special", 1, 1, 1, nil, 1, 1, nil, 1, 1, nil)
 	return game_items
 end
 

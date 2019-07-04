@@ -44,7 +44,6 @@ function on_message(self, message_id, message, sender)
 		local outcome = gf.determine_outcome(player_move, enemy_move)
 
 		local enemy_item = self.enemy[enemy_move][outcome.enemy_result]
-		pprint(enemy_item)
 		
 		msg.post(sender, "outcome", {["outcome"] = outcome.player_result, ["enemy_item"] = enemy_item})
 		print("Enemy outcome: " .. outcome.enemy_result)
