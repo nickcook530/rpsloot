@@ -12,17 +12,22 @@ print(my_file_path)
 
 local M = sys.load(my_file_path) or {}
 
-if next(M) == nil then
+-- next(M) == nil
+if true then -- While in development I'll just recreate each time
 	print("Generator if statement start")
 	M.items = item_creator.generate_game_items()
 
 	M.enemies = enemy_creator.generate_game_enemies()
+	M.enemies[1].shield = M.items[1]
+	M.enemies[1].scroll = M.items[2]
+	M.enemies[1].sword = M.items[3]
+	pprint(M.enemies[1])
 	
 	M.player = player_creator.generate_player()
 	M.player.shield = M.items[1]
 	M.player.scroll = M.items[2]
 	M.player.sword = M.items[3]
-
+	
 	sys.save(my_file_path, M)
 	
 	print("Generator if statement end")

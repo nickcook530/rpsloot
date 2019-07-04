@@ -7,11 +7,11 @@ function init(self)
 	msg.post(".", "acquire_input_focus")
 
 	self.enemy = nil
-	self.move_positions = {vmath.vector3(100, 450, 0), vmath.vector3(322, 450, 0), vmath.vector3(540, 450, 0)}
+	self.move_positions = {vmath.vector3(100, 860, 0), vmath.vector3(322, 860, 0), vmath.vector3(540, 860, 0)}
 	self.move_options = nil
-
+	
 	msg.post("main:/mandatory#main", "enemy init done") --feels like there should be a way to do this via Monarch
-	print(msg.url())
+	
 	print("enemy gui init done")
 end
 
@@ -27,21 +27,34 @@ end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("setup") then
-		self.enemy = gd.enemies[message["level"]]
+		self.enemy = gd.enemies[message["level"]] --set enemy based on the level
 		self.health = self.enemy.health
+		gui.set_text(gui.get_node("enemy_health"), "Enemy health: "..self.health)
 		self.move_options = gf.generate_enemy_move_nodes(self.enemy, self.move_positions)
 		--pprint(self.enemy)
 	end
-	if message_id == hash("select move") then
+
+	if message_id == hash("select_move") then
 		local player_move = message.player_move
 		local enemy_move_node = gf.select_move(self.move_options)
 		local enemy_move = enemy_move_node["move_type"]
 		print("Enemy selected: " .. enemy_move)
 
+
 		local outcome = gf.determine_outcome(player_move, enemy_move)
 
-		msg.post(sender, "outcome", {outcome.player_result})
+		local enemy_item = self.enemy[enemy_move][outcome.enemy_result]
+		pprint(enemy_item)
+		
+		msg.post(sender, "outcome", {["outcome"] = outcome.player_result, ["enemy_item"] = enemy_item})
 		print("Enemy outcome: " .. outcome.enemy_result)
+	end
+
+	if message_id == hash("outcome_actions") then
+		local player_item = message.player_item
+		local enemy_item = message.enemy_item
+		self.health = self.health - player_item.dmg + enemy_item.heal
+		gui.set_text(gui.get_node("enemy_health"), "Enemy health: "..self.health)
 	end
 end
 

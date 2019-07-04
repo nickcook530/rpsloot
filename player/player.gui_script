@@ -7,7 +7,8 @@ function init(self)
 
 	self.player = gd.player
 	self.health = self.player.health
-	self.move_positions = {vmath.vector3(100, 50, 0), vmath.vector3(322, 50, 0), vmath.vector3(540, 50, 0)}
+	gui.set_text(gui.get_node("player_health"), "Player health: "..self.health)
+	self.move_positions = {vmath.vector3(100, 100, 0), vmath.vector3(322, 100, 0), vmath.vector3(540, 100, 0)}
 	self.move_options = gf.generate_player_move_nodes(self.player, self.move_positions)
 	print("player gui init done")
 end
@@ -16,12 +17,12 @@ function on_input(self, action_id, action)
 	if action_id == hash("touch") and action.released then
 		for i=1,3 do
 			local selected_node_tree = self.move_options[i]
-			local player_move_selected = selected_node_tree[hash("player_move")]
-			if gui.pick_node(player_move_selected, action.x, action.y) then
-				--msg.post("main:/enemy#enemy_controller", "move")
+			local player_node_selected = selected_node_tree[hash("player_move")]
+			if gui.pick_node(player_node_selected, action.x, action.y) then
+				self.move_selected = selected_node_tree["move_type"]
 				print("You touched the: " .. selected_node_tree["move_type"])
 				
-				msg.post("level_1:/enemy/enemy#enemy", "select move", {player_move = selected_node_tree["move_type"]})
+				msg.post("level_1:/enemy/enemy#enemy", "select_move", {player_move = selected_node_tree["move_type"]})
 			end
 		end
 	end
@@ -43,7 +44,15 @@ end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("outcome") then
-		print("Player outcome: "..message[1])
+		print("Player outcome: "..message.outcome)
+
+		local player_item = self.player[self.move_selected][message.outcome]
+		local enemy_item = message.enemy_item
+		msg.post(sender, "outcome_actions", {["player_item"] = player_item, ["enemy_item"] = enemy_item})
+		print(message.enemy_item)
+		
+		self.health = self.health - enemy_item.dmg + player_item.heal
+		gui.set_text(gui.get_node("player_health"), "Player health: "..self.health)
 	end
 end
 
