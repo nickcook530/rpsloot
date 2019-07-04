@@ -5,10 +5,8 @@
 
 local gf = {}
 
-
-
 function gf.generate_move_option(character)
-	local move_number = math.random(10)
+	local move_number = math.random(100)
 	print("character move number: " .. move_number)
 	if move_number <= character.shield_range_upper then
 		return "shield"
@@ -60,7 +58,61 @@ function gf.health_change(character, heal, dmg)
 	return character.health
 end
 
+function gf.determine_outcome(player_move, enemy_move)
+	if player_move == "shield" then
+		if enemy_move == "shield" then
+			return {player_result = "tie", enemy_result = "tie"}
+		elseif enemy_move == "scroll" then
+			return {player_result = "loss", enemy_result = "win"}
+		elseif enemy_move == "sword" then
+			return {player_result = "win", enemy_result = "loss"}
+		elseif enemy_move == "special" then
+			return {player_result = "loss", enemy_result = "win"}
+		else
+			print("NO RESULT FOUND FOR "..player_move)
+		end
 
+	elseif player_move == "scroll" then
+		if enemy_move == "shield" then
+			return {player_result = "win", enemy_result = "loss"}
+		elseif enemy_move == "scroll" then
+			return {player_result = "tie", enemy_result = "tie"}
+		elseif enemy_move == "sword" then
+			return {player_result = "loss", enemy_result = "win"}
+		elseif enemy_move == "special" then
+			return {player_result = "loss", enemy_result = "win"}
+		else
+			print("NO RESULT FOUND FOR "..player_move)
+		end 
 
+	elseif player_move == "sword" then
+		if enemy_move == "shield" then
+			return {player_result = "loss", enemy_result = "win"}
+		elseif enemy_move == "scroll" then
+			return {player_result = "win", enemy_result = "loss"}
+		elseif enemy_move == "sword" then
+			return {player_result = "tie", enemy_result = "tie"}
+		elseif enemy_move == "special" then
+			return {player_result = "loss", enemy_result = "win"}
+		else
+			print("NO RESULT FOUND FOR "..player_move)
+		end 
+
+	elseif player_move == "special" then
+		if enemy_move == "shield" then
+			return {player_result = "win", enemy_result = "loss"}
+		elseif enemy_move == "scroll" then
+			return {player_result = "win", enemy_result = "loss"}
+		elseif enemy_move == "sword" then
+			return {player_result = "win", enemy_result = "loss"}
+		elseif enemy_move == "special" then
+			return {player_result = "tie", enemy_result = "tie"} --might be easiest to just handle this as a win?
+		else
+			print("NO RESULT FOUND FOR "..player_move)
+		end 
+	else
+		print("ERROR ON OUTCOME")
+	end
+end
 
 return gf

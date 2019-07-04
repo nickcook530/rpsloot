@@ -1,21 +1,21 @@
---require "items.item_creator"
---require "player.player_creator"
---require "enemies.enemy_creator"
 local game_data = require "main.game_data"
 local monarch = require "monarch.monarch"
 
 function init(self)
 	math.randomseed(socket.gettime()) math.random(100) math.random(100) --set randomseed then discard first few random numbers
 	msg.post("@render:", "use_fixed_fit_projection", { near = -1, far = 1 }) --https://www.defold.com/manuals/render/
-	--collectionfactory.create("/player#playerfactory")
 	msg.post("#", "start")
-	
+
+	print(msg.url())
 	print("main.script init done")
 end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("start") then
-		monarch.show(hash("level_1"))
+		monarch.show(hash("level_1"), {"text in monarch table"})
+	end
+	if message_id == hash("enemy init done") then
+		msg.post(sender, "setup", {level = 1})
 	end
 end
 
