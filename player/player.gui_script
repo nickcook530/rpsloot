@@ -2,6 +2,17 @@ local gd = require "main.game_data"
 local gf = require "main.game_functions"
 --NEED TO SET PLAYER BASED ON CLASS CHOSEN
 
+local function clear_selected_nodes(self) --unnecessary if we just clear on click
+	msg.post("/enemy/enemy#enemy", "delete_node")
+	msg.post(".", "delete_node")
+end
+
+local function clear_previous_results(self)
+	gui.set_color(gui.get_node("outcome"), vmath.vector4(0, 0, 0, 0))
+	msg.post("/enemy/enemy#enemy", "delete_node")
+	msg.post(".", "delete_previous_node")
+end
+
 function init(self)
 	msg.post(".", "acquire_input_focus")
 
@@ -15,18 +26,22 @@ end
 
 function on_input(self, action_id, action)
 	if action_id == hash("touch") and action.released then
+		self.previous_node_tree_selected = self.player_node_tree_selected
 		for i=1, #self.move_options do
-			local selected_node_tree = self.move_options[i]
-			local player_node_selected = selected_node_tree[hash("player_move")]
+			self.player_node_tree_selected = self.move_options[i]
+			local player_node_selected = self.player_node_tree_selected[hash("player_move")]
 			if gui.pick_node(player_node_selected, action.x, action.y) then
-				self.move_selected = selected_node_tree["move_type"] --used in outcome message
-				print("You touched the: " .. selected_node_tree["move_type"])
+				clear_previous_results(self)
+				local move_selected = self.player_node_tree_selected["move_type"] --used in outcome message
+				print("You touched the: " .. self.player_node_tree_selected["move_type"])
 				
-				msg.post("level_1:/enemy/enemy#enemy", "select_move", {["player_move"] = self.move_selected})
+				msg.post("/enemy/enemy#enemy", "select_move", {["player_move"] = move_selected})
 
 				--remove moves as selected
 				table.remove(self.move_options, i)
-				gui.delete_node(player_node_selected)
+				gui.animate(player_node_selected, "position", vmath.vector3(320, 400, 0), gui.EASING_LINEAR, 1)
+				--gui.delete_node(player_node_selected)
+				
 				if next(self.move_options) == nil then
 					self.move_options = gf.generate_player_move_nodes(self.player, self.move_positions)
 				end
@@ -52,15 +67,37 @@ end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("outcome") then
+
 		print("Player outcome: "..message.outcome)
 
-		local player_item = self.player[self.move_selected][message.outcome]
+		local player_item = self.player[self.player_node_tree_selected["move_type"]][message.outcome]
 		local enemy_item = message.enemy_item
 		msg.post(sender, "outcome_actions", {["player_item"] = player_item, ["enemy_item"] = enemy_item})
 		
 		self.health = self.health - enemy_item.dmg + player_item.heal
 		gui.set_text(gui.get_node("player_health"), "Player health: "..self.health)
+
+		local function set_result()
+			local outcome_node = gui.get_node("outcome")
+			gui.set_color(outcome_node, vmath.vector4(1, 1, 1, 1))
+			gui.set_text(outcome_node, message.outcome)
+		end
+
+		timer.delay(1, false, set_result) --delays result until icons move in
 	end
+
+	if message_id == hash("delete_previous_node") then
+		if self.previous_node_tree_selected then
+			gui.delete_node(self.previous_node_tree_selected["player_move"])
+		end
+	end
+	
+	if message_id == hash("delete_node") then
+		if self.player_node_tree_selected then
+			gui.delete_node(self.player_node_tree_selected["player_move"])
+		end
+	end
+	
 end
 
 function on_reload(self)

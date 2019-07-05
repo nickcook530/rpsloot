@@ -36,17 +36,18 @@ function on_message(self, message_id, message, sender)
 	if message_id == hash("select_move") then
 		local player_move = message.player_move
 		local random_choice = math.random(#self.move_options)
-		local enemy_node_tree_selected = self.move_options[random_choice]
-		local enemy_node_selected = enemy_node_tree_selected[hash("enemy_move")]
+		self.enemy_node_tree_selected = self.move_options[random_choice]
+		local enemy_node_selected = self.enemy_node_tree_selected[hash("enemy_move")]
 
+		gui.animate(enemy_node_selected, "position", vmath.vector3(320, 560, 0), gui.EASING_LINEAR, 1)
 		--remove moves as selected
 		table.remove(self.move_options, random_choice)
-		gui.delete_node(enemy_node_selected)
+		--gui.delete_node(enemy_node_selected)
 		if next(self.move_options) == nil then
 			self.move_options = gf.generate_enemy_move_nodes(self.enemy, self.move_positions)
 		end
 		
-		local enemy_move = enemy_node_tree_selected["move_type"]
+		local enemy_move = self.enemy_node_tree_selected["move_type"]
 		print("Enemy selected: " .. enemy_move)
 
 		local outcome = gf.determine_outcome(player_move, enemy_move)
@@ -62,6 +63,12 @@ function on_message(self, message_id, message, sender)
 		local enemy_item = message.enemy_item
 		self.health = self.health - player_item.dmg + enemy_item.heal
 		gui.set_text(gui.get_node("enemy_health"), "Enemy health: "..self.health)
+	end
+
+	if message_id == hash("delete_node") then
+		if self.enemy_node_tree_selected then
+			gui.delete_node(self.enemy_node_tree_selected["enemy_move"])
+		end
 	end
 end
 

@@ -1,7 +1,11 @@
 script: "/enemies/enemy.gui_script"
 fonts {
   name: "generic_font"
-  font: "/main/generic_font.font"
+  font: "/assets/fonts/generic_font.font"
+}
+fonts {
+  name: "large_generic_font"
+  font: "/assets/fonts/large_generic_font.font"
 }
 textures {
   name: "enemy_items"
@@ -188,7 +192,7 @@ nodes {
 nodes {
   position {
     x: 25.0
-    y: 930.0
+    y: 960.0
     z: 0.0
     w: 1.0
   }
@@ -219,7 +223,7 @@ nodes {
   type: TYPE_TEXT
   blend_mode: BLEND_MODE_ALPHA
   text: ""
-  font: "generic_font"
+  font: "large_generic_font"
   id: "enemy_health"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
