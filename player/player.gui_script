@@ -24,10 +24,13 @@ function on_input(self, action_id, action)
 				
 				msg.post("level_1:/enemy/enemy#enemy", "select_move", {["player_move"] = self.move_selected})
 
-
-				--table.remove(self.move_options, i)
-				--table.insert(self.move_options, i, nil)
-				--gui.delete_node(player_node_selected)
+				--remove moves as selected
+				table.remove(self.move_options, i)
+				gui.delete_node(player_node_selected)
+				if next(self.move_options) == nil then
+					self.move_options = gf.generate_player_move_nodes(self.player, self.move_positions)
+				end
+				break
 			end
 		end
 	end
