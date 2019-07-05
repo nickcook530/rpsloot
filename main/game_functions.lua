@@ -9,7 +9,7 @@ function gf.generate_move_option(character)
 	local move_number = math.random(100)
 	local special_number = math.random(100)
 	local move = nil
-	print("character move number: " .. move_number)
+
 	if move_number <= character.shield_range_upper then
 		move = "shield"
 	elseif move_number > character.shield_range_upper and move_number <= character.scroll_range_upper then
@@ -43,7 +43,7 @@ function gf.generate_enemy_move_nodes(enemy, move_positions)
 	for i=1, 3 do
 		local enemy_move = gf.generate_move_option(enemy)
 		local move_tree = gui.clone_tree(gui.get_node("enemy_move"))
-		gui.set_text(move_tree[hash("move_text")], enemy_move)
+		gui.set_text(move_tree[hash("move_text")], enemy[enemy_move]["name"])
 		gui.set_texture(move_tree[hash("move_image")], "enemy_items")
 		gui.play_flipbook(move_tree[hash("move_image")], enemy_move)
 		gui.set_position(move_tree[hash("enemy_move")], move_positions[i])
