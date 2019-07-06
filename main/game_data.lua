@@ -18,16 +18,19 @@ if true then -- While in development I'll just recreate each time
 	M.items = item_creator.generate_game_items()
 
 	M.enemies = enemy_creator.generate_game_enemies()
-	M.enemies[1].shield = M.items[1]
-	M.enemies[1].scroll = M.items[2]
-	M.enemies[1].sword = M.items[3]
-	M.enemies[1].special = M.items[4]
+	pprint(M.enemies)
+	for key, enemy in pairs(M.enemies) do
+		enemy.shield = M.items.shield[enemy.shield]
+		enemy.scroll = M.items.scroll[enemy.scroll]
+		enemy.sword = M.items.sword[enemy.sword]
+		enemy.special = M.items.special[enemy.special]
+	end
 	
 	M.player = player_creator.generate_player()
-	M.player.shield = M.items[1]
-	M.player.scroll = M.items[2]
-	M.player.sword = M.items[3]
-	M.player.special = M.items[4]
+	M.player.shield = M.items.shield["starter_shield"]
+	M.player.scroll = M.items.scroll["starter_scroll"]
+	M.player.sword = M.items.sword["starter_sword"]
+	M.player.special = M.items.special["test_special"]
 	
 	sys.save(my_file_path, M)
 	
