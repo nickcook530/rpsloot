@@ -39,7 +39,7 @@ function functions.generate_game_items()
 	create_new_item("starter_scroll", "Starter Scroll", "scroll", 1, 1, 0, nil, 0, 0, nil, 0, 0, nil)
 	create_new_item("starter_sword", "Starter Sword", "sword", 1, 1, 0, nil, 0, 0, nil, 0, 0, nil)
 	create_new_item("test_special","Test Special", "special", 1, 1, 1, nil, 1, 1, nil, 1, 1, nil)
-	pprint(game_items)
+
 	return game_items
 end
 

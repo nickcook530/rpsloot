@@ -11,7 +11,7 @@ end
 function init(self)
 	msg.post(".", "acquire_input_focus")
 
-	self.player = gd.player
+	self.player = gd.player.current_class
 	self.health = self.player.health
 	gui.set_text(gui.get_node("player_health"), "Player health: "..self.health)
 	self.move_positions = {vmath.vector3(100, 100, 0), vmath.vector3(322, 100, 0), vmath.vector3(540, 100, 0)}

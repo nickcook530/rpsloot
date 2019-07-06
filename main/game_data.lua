@@ -4,7 +4,7 @@
 -- in any script using the functions.
 local item_creator = require("items.item_creator")
 local enemy_creator = require("enemies.enemy_creator")
-local player_creator = require("player.player_creator")
+local class_creator = require("player.class_creator")
 
 local my_file_path = sys.get_save_file("rps_loot", "game_data")
 print(my_file_path)
@@ -15,22 +15,26 @@ local M = sys.load(my_file_path) or {}
 -- next(M) == nil
 if true then -- While in development I'll just recreate each time
 	print("Generator if statement start")
+
 	M.items = item_creator.generate_game_items()
 
 	M.enemies = enemy_creator.generate_game_enemies()
-	pprint(M.enemies)
 	for key, enemy in pairs(M.enemies) do
 		enemy.shield = M.items.shield[enemy.shield]
 		enemy.scroll = M.items.scroll[enemy.scroll]
 		enemy.sword = M.items.sword[enemy.sword]
 		enemy.special = M.items.special[enemy.special]
 	end
-	
-	M.player = player_creator.generate_player()
-	M.player.shield = M.items.shield["starter_shield"]
-	M.player.scroll = M.items.scroll["starter_scroll"]
-	M.player.sword = M.items.sword["starter_sword"]
-	M.player.special = M.items.special["test_special"]
+
+	M.classes = class_creator.generate_game_classes()
+	for key, class in pairs(M.classes) do
+		class.shield = M.items.shield[class.shield]
+		class.scroll = M.items.scroll[class.scroll]
+		class.sword = M.items.sword[class.sword]
+		class.special = M.items.special[class.special]
+	end
+
+	M.player = {current_class = M.classes["rogue"]}
 	
 	sys.save(my_file_path, M)
 	

@@ -7,6 +7,7 @@ local functions = {}
 
 local game_enemies = {}
 
+--Could probably remove OOP design considering limitations of sys.save (no functions)
 local enemy = {}
 enemy.__index = enemy
 
