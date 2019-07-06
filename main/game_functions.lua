@@ -28,11 +28,13 @@ function gf.generate_player_move_nodes(player, move_positions)
 	for i=1, 3 do
 		local player_move = gf.generate_move_option(player)
 		local move_tree = gui.clone_tree(gui.get_node("player_move"))
+
 		gui.set_text(move_tree[hash("move_text")], player[player_move]["name"])
 		gui.set_texture(move_tree[hash("move_image")], "player_items")
 		gui.play_flipbook(move_tree[hash("move_image")], player_move)
 		gui.set_position(move_tree[hash("player_move")], move_positions[i])
 		move_tree["move_type"] = player_move
+
 		table.insert(return_table, move_tree)
 	end
 	return return_table
@@ -120,5 +122,6 @@ function gf.determine_outcome(player_move, enemy_move)
 		print("ERROR ON OUTCOME")
 	end
 end
+
 
 return gf

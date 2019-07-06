@@ -18,6 +18,7 @@ end
 function final(self)
 	-- Add finalization code here
 	-- Remove this function if not needed
+	print("player gui script final function done")
 end
 
 function update(self, dt)
