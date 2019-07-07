@@ -2,11 +2,18 @@ local gd = require "main.game_data"
 local gf = require "main.game_functions"
 --NEED TO SET PLAYER BASED ON CLASS CHOSEN
 
-local function clear_previous_results(self, handle, time_elapsed)
-	gui.set_color(gui.get_node("outcome"), vmath.vector4(0, 0, 0, 0))
-	msg.post("/enemy/enemy#enemy", "delete_node")
-	msg.post(".", "delete_previous_node")
-	--if handle then timer.cancel(handle) end
+local clear_results_timer
+
+local function clear_previous_results(self)
+	--if clear_results_timer then timer.cancel(clear_results_timer) print("timer cleared in clear function") end
+	if self.previous_node_selected then
+		print("CLEAR RUNNING")
+		gui.set_color(gui.get_node("outcome"), vmath.vector4(0, 0, 0, 0))
+		msg.post("/enemy/enemy#enemy", "delete_node")
+		msg.post(".", "delete_previous_node")
+	else
+		print("clearing results skipped")
+	end
 end
 
 function init(self)
@@ -76,23 +83,25 @@ function on_message(self, message_id, message, sender)
 		gui.set_text(gui.get_node("player_health"), "Player health: "..self.health)
 
 		--set previous node so it can be cleared when next node is touched
-		self.previous_node_tree_selected = self.player_node_tree_selected
+		self.previous_node_selected = self.player_node_tree_selected[hash("player_move")]
 
+		
 		local function set_result()
 			local outcome_node = gui.get_node("outcome")
 			gui.set_color(outcome_node, vmath.vector4(1, 1, 1, 1))
 			gui.set_text(outcome_node, message.outcome)
 		end
-		--timer.delay(1, false, set_result) --delays result until icons move in
-		set_result()
 
-		--timer.delay(3, false, clear_previous_results)
+		--set the results and then start a timer to clear them if they aren't cleared by next touch first
+		set_result()
+		if clear_results_timer then timer.cancel(clear_results_timer) print("timer cleared in outcome") end
+		clear_results_timer = timer.delay(3, false, clear_previous_results)
+		
 	end
 
 	if message_id == hash("delete_previous_node") then
-		if self.previous_node_tree_selected then
-			gui.delete_node(self.previous_node_tree_selected["player_move"])
-		end
+		gui.delete_node(self.previous_node_selected)
+		self.previous_node_selected = nil
 	end
 	
 end
