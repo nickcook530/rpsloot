@@ -1,20 +1,8 @@
-local gd = require "main.game_data"
-local gf = require "main.game_functions"
+local gd = require "game.game_data"
+local gf = require "game.game_functions"
 --NEED TO SET PLAYER BASED ON CLASS CHOSEN
 
-local clear_results_timer
-
-local function clear_previous_results(self)
-	--if clear_results_timer then timer.cancel(clear_results_timer) print("timer cleared in clear function") end
-	if self.previous_node_selected then
-		print("CLEAR RUNNING")
-		gui.set_color(gui.get_node("outcome"), vmath.vector4(0, 0, 0, 0))
-		msg.post("/enemy/enemy#enemy", "delete_node")
-		msg.post(".", "delete_previous_node")
-	else
-		print("clearing results skipped")
-	end
-end
+--local clear_results_timer --maybe should just be a self variable??
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
@@ -26,6 +14,7 @@ function init(self)
 	self.move_positions = {vmath.vector3(100, 100, 0), vmath.vector3(322, 100, 0), vmath.vector3(540, 100, 0)}
 	self.move_options = gf.generate_player_move_nodes(self.player, self.move_positions)
 
+	
 	print("player gui init done")
 end
 
@@ -35,17 +24,19 @@ function on_input(self, action_id, action)
 			self.player_node_tree_selected = self.move_options[i]
 			local player_node_selected = self.player_node_tree_selected[hash("player_move")]
 			if gui.pick_node(player_node_selected, action.x, action.y) then
-				clear_previous_results(self)
+				msg.post("/game/game#game", "clear_results") --clear previous results
 								
-				local move_selected = self.player_node_tree_selected["move_type"] --used in outcome message
-				print("You touched the: " .. self.player_node_tree_selected["move_type"])
+				local move_selected = self.player_node_tree_selected["move_type"] --used in player_choice message
+				print("You touched the: " .. move_selected)
 
-				msg.post("/enemy/enemy#enemy", "select_move", {["player_move"] = move_selected})
+				msg.post("/enemy/enemy#enemy", "select_move") --tell enemy to select move
+				msg.post("/game/game#game", "player_choice", {["player_move"] = move_selected}) --tell game gui what move you selected
 
 				--remove moves as selected
 				table.remove(self.move_options, i)
 				gui.animate(player_node_selected, "position", vmath.vector3(320, 400, 0), gui.EASING_LINEAR, 1)
-				
+
+				--generate next set of moves if player runs out
 				if next(self.move_options) == nil then
 					self.move_options = gf.generate_player_move_nodes(self.player, self.move_positions)
 				end
@@ -62,7 +53,7 @@ end
 function final(self)
 	-- Return input focus when the object is deleted
 	--msg.post(".", "release_input_focus")
-	print("player gui script final function done")
+	print("PLAYER gui script final function done")
 end
 
 function update(self, dt)
@@ -71,34 +62,17 @@ function update(self, dt)
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == hash("outcome") then
-
-		print("Player outcome: "..message.outcome)
-
-		local player_item = self.player[self.player_node_tree_selected["move_type"]][message.outcome]
-		local enemy_item = message.enemy_item
-		msg.post(sender, "outcome_actions", {["player_item"] = player_item, ["enemy_item"] = enemy_item})
-		
-		self.health = self.health - enemy_item.dmg + player_item.heal
-		gui.set_text(gui.get_node("player_health"), "Player health: "..self.health)
-
-		--set previous node so it can be cleared when next node is touched
-		self.previous_node_selected = self.player_node_tree_selected[hash("player_move")]
-
-		
-		local function set_result()
-			local outcome_node = gui.get_node("outcome")
-			gui.set_color(outcome_node, vmath.vector4(1, 1, 1, 1))
-			gui.set_text(outcome_node, message.outcome)
-		end
-
-		--set the results and then start a timer to clear them if they aren't cleared by next touch first
-		set_result()
-		if clear_results_timer then timer.cancel(clear_results_timer) print("timer cleared in outcome") end
-		clear_results_timer = timer.delay(3, false, clear_previous_results)
-		
+	--send items to game gui script
+	if message_id == hash("send_items") then
+		msg.post(sender, "player_items", {shield=self.player.shield, scroll=self.player.scroll, sword = self.player.sword, special=self.player.special})
 	end
 
+	if message_id == hash("outcome_actions") then
+		self.previous_node_selected = self.player_node_tree_selected[hash("player_move")]
+		self.health = self.health + message.health_change
+		gui.set_text(gui.get_node("player_health"), "Player health: "..self.health)
+	end
+	
 	if message_id == hash("delete_previous_node") then
 		gui.delete_node(self.previous_node_selected)
 		self.previous_node_selected = nil

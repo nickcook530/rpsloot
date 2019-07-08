@@ -123,5 +123,16 @@ function gf.determine_outcome(player_move, enemy_move)
 	end
 end
 
+function gf.clear_previous_results(self)
+	if self.results_showing then
+		print("CLEAR RUNNING")
+		gui.set_color(gui.get_node("outcome"), vmath.vector4(0, 0, 0, 0))
+		msg.post("/enemy/enemy#enemy", "delete_previous_node")
+		msg.post("/player/player#player", "delete_previous_node")
+		self.results_showing = false
+	else
+		print("CLEARING RESULTS SKIPPED")
+	end
+end
 
 return gf

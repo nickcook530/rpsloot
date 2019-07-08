@@ -1,0 +1,93 @@
+local gd = require "game.game_data"
+local gf = require "game.game_functions"
+local monarch = require "monarch.monarch"
+
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+
+	self.clear_results_timer = nil
+	self.results_showing = false
+	
+	self.player_move_selected = nil
+	self.player_items = {}
+	
+	self.enemy_move_selected = nil
+	self.enemy_items = {}
+
+	msg.post("/player/player#player", "send_items")
+	--msg.post("/enemy/enemy#enemy", "send_items")
+	print("game gui init done")
+end
+
+function final(self)
+	-- Add finalization code here
+	-- Remove this function if not needed
+	print("GAME gui script final function done")
+end
+
+function update(self, dt)
+	-- Add update code here
+	-- Remove this function if not needed
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("player_items") then
+		self.player_items = message
+	end
+
+	if message_id == hash("enemy_setup_done") then
+		msg.post(sender, "send_items")
+	end
+	
+	if message_id == hash("enemy_items") then
+		self.enemy_items = message
+	end
+
+	if message_id == hash("player_choice") then
+		self.player_choice = message.player_move
+	end
+
+	if message_id == hash("enemy_choice") then
+		self.enemy_choice = message.enemy_move
+
+		local outcome = gf.determine_outcome(self.player_choice, self.enemy_choice)
+
+		local player_result = outcome.player_result
+		local enemy_result = outcome.enemy_result
+
+		local player_outcome_actions = {["health_change"] = self.player_items[self.player_choice][player_result].heal - self.enemy_items[self.enemy_choice][enemy_result].dmg} 
+		local enemy_outcome_actions = {["health_change"] = self.enemy_items[self.enemy_choice][enemy_result].heal - self.player_items[self.player_choice][player_result].dmg}
+
+		msg.post("/player/player#player", "outcome_actions", player_outcome_actions)
+		msg.post("/enemy/enemy#enemy", "outcome_actions", enemy_outcome_actions)
+
+		local function set_result()
+			local outcome_node = gui.get_node("outcome")
+			gui.set_color(outcome_node, vmath.vector4(1, 1, 1, 1))
+			gui.set_text(outcome_node, player_result)
+			self.results_showing = true
+		end
+
+		--set the results and then start a timer to clear them if they aren't cleared by next touch first
+		set_result()
+		if self.clear_results_timer then timer.cancel(self.clear_results_timer) end
+		self.clear_results_timer = timer.delay(3, false, gf.clear_previous_results)
+	end
+
+	if message_id == hash("clear_results") then
+		gf.clear_previous_results(self)
+	end
+	
+	
+end
+
+function on_input(self, action_id, action)
+	-- Add input-handling code here
+	-- Remove this function if not needed
+end
+
+function on_reload(self)
+	-- Add input-handling code here
+	-- Remove this function if not needed
+end

@@ -1,6 +1,6 @@
 --url: "level_1:/enemy/enemy#enemy"
-local gd = require "main.game_data"
-local gf = require "main.game_functions"
+local gd = require "game.game_data"
+local gf = require "game.game_functions"
 -- NEED TO SET ENEMY PER LEVEL (generic way?)
 
 function init(self)
@@ -10,15 +10,15 @@ function init(self)
 	self.move_positions = {vmath.vector3(100, 860, 0), vmath.vector3(322, 860, 0), vmath.vector3(540, 860, 0)}
 	self.move_options = nil
 	
-	msg.post("main:/mandatory#main", "enemy init done") --feels like there should be a way to do this via Monarch
-	
+	msg.post("main:/mandatory#main", "enemy_init_done") --feels like there should be a way to do this via Monarch
+		
 	print("enemy gui init done")
 end
 
 function final(self)
 	-- Add finalization code here
 	-- Remove this function if not needed
-	print("player gui script final function done")
+	print("ENEMY gui script final function done")
 end
 
 function update(self, dt)
@@ -32,18 +32,26 @@ function on_message(self, message_id, message, sender)
 		self.health = self.enemy.health
 		gui.set_text(gui.get_node("enemy_health"), "Enemy health: "..self.health)
 		self.move_options = gf.generate_enemy_move_nodes(self.enemy, self.move_positions)
+		msg.post("/game/game#game", "enemy_setup_done")
 	end
 
+	--send items to game gui script
+	if message_id == hash("send_items") then
+		msg.post(sender, "enemy_items", {shield=self.enemy.shield, scroll=self.enemy.scroll, sword=self.enemy.sword, special=self.enemy.special})
+	end
+
+	--prompt enemy to select a move
 	if message_id == hash("select_move") then
-		local player_move = message.player_move
 		local random_choice = math.random(#self.move_options)
 		self.enemy_node_tree_selected = self.move_options[random_choice]
 		local enemy_node_selected = self.enemy_node_tree_selected[hash("enemy_move")]
 
 		gui.animate(enemy_node_selected, "position", vmath.vector3(320, 560, 0), gui.EASING_LINEAR, 1)
+
 		--remove moves as selected
 		table.remove(self.move_options, random_choice)
-		--gui.delete_node(enemy_node_selected)
+
+		--generate new enemy options if needed
 		if next(self.move_options) == nil then
 			self.move_options = gf.generate_enemy_move_nodes(self.enemy, self.move_positions)
 		end
@@ -51,25 +59,19 @@ function on_message(self, message_id, message, sender)
 		local enemy_move = self.enemy_node_tree_selected["move_type"]
 		print("Enemy selected: " .. enemy_move)
 
-		local outcome = gf.determine_outcome(player_move, enemy_move)
-
-		local enemy_item = self.enemy[enemy_move][outcome.enemy_result]
+		msg.post("/game/game#game", "enemy_choice", {["enemy_move"] = enemy_move})
 		
-		msg.post(sender, "outcome", {["outcome"] = outcome.player_result, ["enemy_item"] = enemy_item})
-		print("Enemy outcome: " .. outcome.enemy_result)
 	end
 
 	if message_id == hash("outcome_actions") then
-		local player_item = message.player_item
-		local enemy_item = message.enemy_item
-		self.health = self.health - player_item.dmg + enemy_item.heal
+		self.previous_node_selected = self.enemy_node_tree_selected[hash("enemy_move")]
+		self.health = self.health + message.health_change
 		gui.set_text(gui.get_node("enemy_health"), "Enemy health: "..self.health)
 	end
 
-	if message_id == hash("delete_node") then
-		if self.enemy_node_tree_selected then
-			gui.delete_node(self.enemy_node_tree_selected["enemy_move"])
-		end
+	if message_id == hash("delete_previous_node") then
+		gui.delete_node(self.previous_node_selected)
+		self.previous_node_selected = nil
 	end
 end
 

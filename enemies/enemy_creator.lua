@@ -25,7 +25,7 @@ local function create_new_enemy(name, health, shield, shield_range_upper, scroll
 end
 
 function functions.generate_game_enemies()
-	create_new_enemy("Basic Enemy", 3, "starter_shield", 50, "starter_scroll", 80, "starter_sword", 100, "test_special", 5)
+	create_new_enemy("Basic Enemy", 3, "starter_shield", 50, "starter_scroll", 80, "starter_sword", 100, "test_special", 10)
 	return game_enemies
 end
 
