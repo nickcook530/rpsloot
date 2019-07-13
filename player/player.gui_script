@@ -71,6 +71,10 @@ function on_message(self, message_id, message, sender)
 		self.previous_node_selected = self.player_node_tree_selected[hash("player_move")]
 		self.health = self.health + message.health_change
 		gui.set_text(gui.get_node("player_health"), "Player health: "..self.health)
+		print("PLAYER hp: " ..self.health)
+		if self.health <= 0 then
+			msg.post("/game/game#game", "player_health_0")
+		end
 	end
 	
 	if message_id == hash("delete_previous_node") then

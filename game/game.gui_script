@@ -78,7 +78,15 @@ function on_message(self, message_id, message, sender)
 	if message_id == hash("clear_results") then
 		gf.clear_previous_results(self)
 	end
-	
+
+	if message_id == hash("player_health_0") then
+		monarch.show(hash("loss_popup"))
+	end
+
+	if message_id == hash("enemy_health_0") then
+		print("calling win popup")
+		monarch.show(hash("win_popup"))
+	end
 	
 end
 
