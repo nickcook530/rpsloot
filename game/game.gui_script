@@ -17,6 +17,7 @@ function init(self)
 
 	msg.post("/player/player#player", "send_items")
 	--msg.post("/enemy/enemy#enemy", "send_items")
+	msg.post("main:/mandatory#main", "game_init_done") --feels like there should be a way to do this via Monarch
 	print("game gui init done")
 end
 
@@ -32,6 +33,11 @@ function update(self, dt)
 end
 
 function on_message(self, message_id, message, sender)
+	if message_id == hash("setup") then
+		self.level = message["level"]
+		msg.post("/enemy/enemy#enemy", "setup", {level = self.level})
+	end
+	
 	if message_id == hash("player_items") then
 		self.player_items = message
 	end

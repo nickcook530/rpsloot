@@ -34,7 +34,7 @@ if true then -- While in development I'll just recreate each time
 		class.special = M.items.special[class.special]
 	end
 
-	M.player = {current_class = M.classes["rogue"]}
+	M.player = {current_class = M.classes["rogue"], current_level = 1}
 	
 	sys.save(my_file_path, M)
 	

@@ -10,8 +10,6 @@ function init(self)
 	self.move_positions = {vmath.vector3(100, 860, 0), vmath.vector3(322, 860, 0), vmath.vector3(540, 860, 0)}
 	self.move_options = nil
 	
-	msg.post("main:/mandatory#main", "enemy_init_done") --feels like there should be a way to do this via Monarch
-		
 	print("enemy gui init done")
 end
 

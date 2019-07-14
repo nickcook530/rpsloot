@@ -12,9 +12,10 @@ end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("start") then
-		monarch.show(hash("level_1"), {"text in monarch table"})
+		monarch.show(hash("main_menu"))
 	end
-	if message_id == hash("enemy_init_done") then
+
+	if message_id == hash("game_init_done") then
 		msg.post(sender, "setup", {level = 1})
 	end
 end
