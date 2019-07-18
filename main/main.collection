@@ -57,7 +57,7 @@ embedded_instances {
   }
 }
 embedded_instances {
-  id: "level_1"
+  id: "level"
   data: "components {\n"
   "  id: \"screen_proxy\"\n"
   "  component: \"/monarch/screen_proxy.script\"\n"
@@ -74,7 +74,7 @@ embedded_instances {
   "  }\n"
   "  properties {\n"
   "    id: \"screen_id\"\n"
-  "    value: \"level_1\"\n"
+  "    value: \"level\"\n"
   "    type: PROPERTY_TYPE_HASH\n"
   "  }\n"
   "  properties {\n"

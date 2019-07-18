@@ -28,18 +28,34 @@ if true then -- While in development I'll just recreate each time
 
 	M.classes = class_creator.generate_game_classes()
 	for key, class in pairs(M.classes) do
-		class.shield = M.items.shield[class.shield]
+		class.shield = M.items.shield[class.shield] --creator just gives it the name, need to reference full item from items table
 		class.scroll = M.items.scroll[class.scroll]
 		class.sword = M.items.sword[class.sword]
 		class.special = M.items.special[class.special]
+		class.inventory.shield = class.shield --build out class inventory
+		class.inventory.scroll = class.scroll
+		class.inventory.sword = class.sword
+		pprint(class)
 	end
 
-	M.player = {current_class = M.classes["rogue"], current_level = 1}
+	M.player = {current_class = M.classes["rogue"], current_level = 1, special = {}}
 	
 	sys.save(my_file_path, M)
 	
 	print("Generator if statement end")
 end
+
+function update_player_level(trigger)
+	if trigger == "next" then
+		M.player.current_level = M.player.current_level + 1
+	elseif trigger == "reset" then
+		M.player.current_level = 1
+	else
+		print("Update Player level error")
+	end
+	save_game_data()
+end
+
 
 function save_game_data()
 	sys.save(my_file_path, M)

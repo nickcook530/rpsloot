@@ -9,6 +9,7 @@ function init(self)
 
 	self.player = gd.player.current_class
 	self.health = self.player.health
+	self.effect_table = {} --table to hold effects that last multiple turns
 	gui.set_text(gui.get_node("player_health"), "Player health: "..self.health)
 	
 	self.move_positions = {vmath.vector3(100, 100, 0), vmath.vector3(322, 100, 0), vmath.vector3(540, 100, 0)}
@@ -68,8 +69,14 @@ function on_message(self, message_id, message, sender)
 	end
 
 	if message_id == hash("outcome_actions") then
-		self.previous_node_selected = self.player_node_tree_selected[hash("player_move")]
+		self.previous_node_selected = self.player_node_tree_selected[hash("player_move")] --set node to be cleared manually
+		
 		self.health = self.health + message.health_change
+
+		--NEED TO ADD EFFECT HANDLING HERE LIKE ENEMY
+
+		
+		
 		gui.set_text(gui.get_node("player_health"), "Player health: "..self.health)
 		print("PLAYER hp: " ..self.health)
 		if self.health <= 0 then

@@ -1,4 +1,4 @@
-name: "level_1"
+name: "level"
 collection_instances {
   id: "player"
   collection: "/player/player.collection"

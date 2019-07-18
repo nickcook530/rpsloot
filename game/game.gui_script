@@ -15,9 +15,12 @@ function init(self)
 	self.enemy_move_selected = nil
 	self.enemy_items = {}
 
+	self.level = gd.player.current_level or 1 --get players current level
+
+	msg.post("/enemy/enemy#enemy", "setup", {level = self.level})
 	msg.post("/player/player#player", "send_items")
 	--msg.post("/enemy/enemy#enemy", "send_items")
-	msg.post("main:/mandatory#main", "game_init_done") --feels like there should be a way to do this via Monarch
+	--msg.post("main/main_menu#main_menu", "game_init_done") --feels like there should be a way to do this via Monarch
 	print("game gui init done")
 end
 
@@ -33,11 +36,6 @@ function update(self, dt)
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == hash("setup") then
-		self.level = message["level"]
-		msg.post("/enemy/enemy#enemy", "setup", {level = self.level})
-	end
-	
 	if message_id == hash("player_items") then
 		self.player_items = message
 	end
@@ -61,9 +59,21 @@ function on_message(self, message_id, message, sender)
 
 		local player_result = outcome.player_result
 		local enemy_result = outcome.enemy_result
+		local player_item = self.player_items[self.player_choice][player_result]
+		local enemy_item = self.enemy_items[self.enemy_choice][enemy_result]
+		pprint(player_item.effect)
+		
+		local player_health_change = player_item.heal - enemy_item.dmg
+		local player_effect_change = gf.get_effects("player", player_item.effect, enemy_item.effect)
+		print("player effects from game gui")
+		pprint(player_effect_change)
+		local player_outcome_actions = {health_change = player_health_change, effect_change = player_effect_change}
 
-		local player_outcome_actions = {["health_change"] = self.player_items[self.player_choice][player_result].heal - self.enemy_items[self.enemy_choice][enemy_result].dmg} 
-		local enemy_outcome_actions = {["health_change"] = self.enemy_items[self.enemy_choice][enemy_result].heal - self.player_items[self.player_choice][player_result].dmg}
+		local enemy_health_change = enemy_item.heal - player_item.dmg
+		local enemy_effect_change = gf.get_effects("enemy", player_item.effect, enemy_item.effect)
+		print("enemy effects from game gui")
+		pprint(enemy_effect_change)
+		local enemy_outcome_actions = {health_change = enemy_health_change, effect_change = enemy_effect_change}
 
 		msg.post("/player/player#player", "outcome_actions", player_outcome_actions)
 		msg.post("/enemy/enemy#enemy", "outcome_actions", enemy_outcome_actions)
@@ -87,11 +97,12 @@ function on_message(self, message_id, message, sender)
 
 	if message_id == hash("player_health_0") then
 		monarch.show(hash("loss_popup"))
+		update_player_level("reset")
 	end
 
 	if message_id == hash("enemy_health_0") then
-		print("calling win popup")
 		monarch.show(hash("win_popup"))
+		update_player_level("next")
 	end
 	
 end

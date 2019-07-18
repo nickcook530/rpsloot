@@ -123,6 +123,19 @@ function gf.determine_outcome(player_move, enemy_move)
 	end
 end
 
+function gf.get_effects(target, player_item_effect, enemy_item_effect)
+	local effects = {}
+	if player_item_effect.target == target then
+		table.insert(effects, player_item_effect)
+	elseif enemy_item_effect.target == target then
+		table.insert(effects, enemy_item_effect)
+	else
+		print("NO EFFECTS for "..target)
+	end
+	return effects
+end
+
+
 function gf.clear_previous_results(self)
 	if self.results_showing then
 		print("CLEAR RUNNING")

@@ -35,10 +35,11 @@ local function create_new_item(table_key, name, type, level, win_dmg, win_heal, 
 end
 
 function functions.generate_game_items()
-	create_new_item("starter_shield", "Starter Shield", "shield", 1, 1, 0, nil, 0, 0, nil, 0, 0, nil)
-	create_new_item("starter_scroll", "Starter Scroll", "scroll", 1, 1, 0, nil, 0, 0, nil, 0, 0, nil)
-	create_new_item("starter_sword", "Starter Sword", "sword", 1, 1, 0, nil, 0, 0, nil, 0, 0, nil)
+	create_new_item("basic_shield_1", "Basic Shield", "shield", 1, 1, 0, nil, 0, 0, nil, 0, 0, nil)
+	create_new_item("basic_scroll_1", "Basic Scroll", "scroll", 1, 1, 0, nil, 0, 0, nil, 0, 0, nil)
+	create_new_item("basic_sword_1", "Basic Sword", "sword", 1, 1, 0, nil, 0, 0, nil, 0, 0, nil)
 	create_new_item("test_special","Test Special", "special", 1, 1, 1, nil, 1, 1, nil, 1, 1, nil)
+	create_new_item("fire_scroll_1", "Fire Scroll", "scroll", 1, 0, 0, {target = "enemy", name = "fire", hp_change = "-1", duration = 1}, 0, 0, nil, 0, 0, nil)
 
 	return game_items
 end

@@ -7,6 +7,7 @@ function init(self)
 	msg.post(".", "acquire_input_focus")
 
 	self.enemy = nil
+	self.effect_table = {}
 	self.move_positions = {vmath.vector3(100, 860, 0), vmath.vector3(322, 860, 0), vmath.vector3(540, 860, 0)}
 	self.move_options = nil
 	
@@ -62,8 +63,39 @@ function on_message(self, message_id, message, sender)
 	end
 
 	if message_id == hash("outcome_actions") then
-		self.previous_node_selected = self.enemy_node_tree_selected[hash("enemy_move")]
+		self.previous_node_selected = self.enemy_node_tree_selected[hash("enemy_move")] --set last node to be deleted manually
+		
 		self.health = self.health + message.health_change
+
+		print("prior to adding")
+		pprint(self.effect_table)
+		--run through table, affect health accordingly and change duration
+		for k, effect in pairs(self.effect_table) do
+			self.health = self.health + effect.hp_change
+			effect.duration = effect.duration - 1
+			if effect.duration == 0 then
+				table.remove(self.effect_table, k)
+			end
+		end
+
+		--update effect table with ne effects
+
+		for k, new_effect in pairs(message.effect_change) do
+			print("new effect: ")
+			pprint(new_effect)
+			for i, current_effect in pairs(self.effect_table) do
+				print("current effect: ")
+				pprint(current_effect)
+				if new_effect.name == current_effect.name then
+					current_effect.duration = new_effect.duration
+					table.remove(message.effect_change, k)
+				end
+			end
+			table.insert(self.effect_table, new_effect)
+		end
+
+		print("after adding")
+		pprint(self.effect_table)
 		gui.set_text(gui.get_node("enemy_health"), "Enemy health: "..self.health)
 		print("ENEMY hp: " ..self.health)
 		if self.health <= 0 then

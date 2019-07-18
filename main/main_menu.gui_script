@@ -8,6 +8,7 @@ end
 function final(self)
 	-- Add finalization code here
 	-- Remove this function if not needed
+	print("main menu gui script final")
 end
 
 function update(self, dt)
@@ -16,17 +17,14 @@ function update(self, dt)
 end
 
 function on_message(self, message_id, message, sender)
-	-- Add message-handling code here
-	-- Remove this function if not needed
+
 end
 
 function on_input(self, action_id, action)
 	if action_id == hash("touch") and action.released then
 		if gui.pick_node(gui.get_node("play_button"), action.x, action.y) then
-			local level = "level_"..gd.player.current_level or 1 --get players current level
-			monarch.show(hash(level))
+			monarch.show(hash("level"))
 		end
-			
 	end
 end
 
