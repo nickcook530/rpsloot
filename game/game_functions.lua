@@ -123,18 +123,58 @@ function gf.determine_outcome(player_move, enemy_move)
 	end
 end
 
-function gf.get_effects(target, player_item_effect, enemy_item_effect)
+
+--given items correctly distribute effects to player or enemy
+function gf.get_effects(caller, player_item_effect, enemy_item_effect)
 	local effects = {}
-	if player_item_effect.target == target then
-		table.insert(effects, player_item_effect)
-	elseif enemy_item_effect.target == target then
-		table.insert(effects, enemy_item_effect)
-	else
-		print("NO EFFECTS for "..target)
+	if caller == "player" then
+		if player_item_effect.target == "self" then
+			table.insert(effects, player_item_effect)
+		elseif enemy_item_effect.target == "opponent" then
+			table.insert(effects, enemy_item_effect)
+		else
+			print("NO EFFECTS for player")
+		end
+	elseif caller == "enemy" then
+		if player_item_effect.target == "opponent" then
+			table.insert(effects, player_item_effect)
+		elseif enemy_item_effect.target == "self" then
+			table.insert(effects, enemy_item_effect)
+		else
+			print("NO EFFECTS for enemy")
+		end
 	end
 	return effects
 end
 
+--trigger effects to take action
+function gf.trigger_effects(health, effect_table)
+	for k, effect in pairs(effect_table) do
+		health = health + effect.hp_change
+		effect.duration = effect.duration - 1
+		if effect.duration == 0 then
+			table.remove(effect_table, k)
+		end
+	end
+	return {health = health, effect_table = effect_table}
+end
+
+function gf.add_new_effects(new_effects, effect_table)
+	for k, new_effect in pairs(new_effects) do
+		print("new effect: ")
+		pprint(new_effect)
+		for i, current_effect in pairs(effect_table) do
+			print("current effect: ")
+			pprint(current_effect)
+			if new_effect.name == current_effect.name then
+				current_effect.duration = new_effect.duration
+				table.remove(message.effect_change, k)
+			end
+		end
+		table.insert(effect_table, new_effect)
+	end
+	return effect_table
+end
 
 function gf.clear_previous_results(self)
 	if self.results_showing then

@@ -16,7 +16,7 @@ local function create_new_class(table_key, name, health, shield_range_upper, scr
 end
 
 function functions.generate_game_classes()
-	create_new_class("rogue", "Rogue", 100, 0, 100, "test_special", 10, true)
+	create_new_class("rogue", "Rogue", 100, 70, 0, "test_special", 10, true)
 	
 	return game_classes
 end

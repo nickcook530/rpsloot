@@ -15,7 +15,6 @@ function init(self)
 	self.move_positions = {vmath.vector3(100, 100, 0), vmath.vector3(322, 100, 0), vmath.vector3(540, 100, 0)}
 	self.move_options = gf.generate_player_move_nodes(self.player, self.move_positions)
 
-	
 	print("player gui init done")
 end
 
@@ -73,9 +72,17 @@ function on_message(self, message_id, message, sender)
 		
 		self.health = self.health + message.health_change
 
-		--NEED TO ADD EFFECT HANDLING HERE LIKE ENEMY
+		print("prior to adding")
+		pprint(self.effect_table)
+		--take action on effects currently on character
+		local effect_outcome = gf.trigger_effects(self.health, self.effect_table)
+		self.health = effect_outcome.health
+		self.effect_table = effect_outcome.effect_table
 
-		
+		--update effect table with new effects
+		self.effect_table = gf.add_new_effects(message.effect_change, self.effect_table)
+		print("after adding")
+		pprint(self.effect_table)
 		
 		gui.set_text(gui.get_node("player_health"), "Player health: "..self.health)
 		print("PLAYER hp: " ..self.health)
