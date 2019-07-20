@@ -169,8 +169,8 @@ function gf.add_new_effects(new_effects, effect_table)
 			print("current effect: ")
 			pprint(current_effect)
 			if new_effect.name == current_effect.name then
-				current_effect.duration = new_effect.duration
-				table.remove(message.effect_change, k)
+				table.remove(effect_table, i)
+				--current_effect.duration = new_effect.duration
 			end
 		end
 		table.insert(effect_table, new_effect)

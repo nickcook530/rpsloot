@@ -192,7 +192,7 @@ nodes {
 nodes {
   position {
     x: 25.0
-    y: 0.0
+    y: 150.0
     z: 0.0
     w: 1.0
   }
@@ -227,7 +227,7 @@ nodes {
   id: "player_health"
   xanchor: XANCHOR_LEFT
   yanchor: YANCHOR_BOTTOM
-  pivot: PIVOT_SW
+  pivot: PIVOT_NW
   outline {
     x: 1.0
     y: 1.0
@@ -254,7 +254,7 @@ nodes {
 nodes {
   position {
     x: 10.0
-    y: 450.0
+    y: 100.0
     z: 0.0
     w: 1.0
   }
@@ -271,8 +271,8 @@ nodes {
     w: 1.0
   }
   size {
-    x: 200.0
-    y: 400.0
+    x: 400.0
+    y: 200.0
     z: 0.0
     w: 1.0
   }
@@ -325,8 +325,8 @@ nodes {
     w: 1.0
   }
   size {
-    x: 150.0
-    y: 35.0
+    x: 75.0
+    y: 20.0
     z: 0.0
     w: 1.0
   }
@@ -339,7 +339,7 @@ nodes {
   type: TYPE_TEXT
   blend_mode: BLEND_MODE_ALPHA
   text: "Combat:"
-  font: "large_generic_font"
+  font: "generic_font"
   id: "combat_result"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
@@ -370,8 +370,8 @@ nodes {
 }
 nodes {
   position {
-    x: 15.0
-    y: -40.0
+    x: 65.0
+    y: 0.0
     z: 0.0
     w: 1.0
   }
@@ -434,7 +434,7 @@ nodes {
 nodes {
   position {
     x: 0.0
-    y: -65.0
+    y: -25.0
     z: 0.0
     w: 1.0
   }
@@ -451,8 +451,8 @@ nodes {
     w: 1.0
   }
   size {
-    x: 150.0
-    y: 35.0
+    x: 100.0
+    y: 25.0
     z: 0.0
     w: 1.0
   }
@@ -465,7 +465,7 @@ nodes {
   type: TYPE_TEXT
   blend_mode: BLEND_MODE_ALPHA
   text: "Effects:"
-  font: "large_generic_font"
+  font: "generic_font"
   id: "effect_result"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
@@ -496,8 +496,8 @@ nodes {
 }
 nodes {
   position {
-    x: 15.0
-    y: -40.0
+    x: 75.0
+    y: 0.0
     z: 0.0
     w: 1.0
   }
@@ -548,6 +548,132 @@ nodes {
   adjust_mode: ADJUST_MODE_FIT
   line_break: false
   parent: "effect_result"
+  layer: ""
+  inherit_alpha: false
+  alpha: 1.0
+  outline_alpha: 1.0
+  shadow_alpha: 1.0
+  template_node_child: false
+  text_leading: 1.0
+  text_tracking: 0.0
+}
+nodes {
+  position {
+    x: 200.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  size {
+    x: 75.0
+    y: 25.0
+    z: 0.0
+    w: 1.0
+  }
+  color {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  type: TYPE_TEXT
+  blend_mode: BLEND_MODE_ALPHA
+  text: "Continuous Effects:"
+  font: "generic_font"
+  id: "cotinuous_effects"
+  xanchor: XANCHOR_NONE
+  yanchor: YANCHOR_NONE
+  pivot: PIVOT_NW
+  outline {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  shadow {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  adjust_mode: ADJUST_MODE_FIT
+  line_break: false
+  parent: "turn_results"
+  layer: ""
+  inherit_alpha: false
+  alpha: 1.0
+  outline_alpha: 1.0
+  shadow_alpha: 1.0
+  template_node_child: false
+  text_leading: 1.0
+  text_tracking: 0.0
+}
+nodes {
+  position {
+    x: 75.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  size {
+    x: 75.0
+    y: 25.0
+    z: 0.0
+    w: 1.0
+  }
+  color {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  type: TYPE_TEXT
+  blend_mode: BLEND_MODE_ALPHA
+  text: ""
+  font: "generic_font"
+  id: "continuous_value"
+  xanchor: XANCHOR_NONE
+  yanchor: YANCHOR_NONE
+  pivot: PIVOT_NW
+  outline {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  shadow {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  adjust_mode: ADJUST_MODE_FIT
+  line_break: false
+  parent: "cotinuous_effects"
   layer: ""
   inherit_alpha: false
   alpha: 1.0

@@ -14,7 +14,7 @@ function init(self)
 	
 	gui.set_text(gui.get_node("player_health"), "Player health: "..self.health)
 	
-	self.move_positions = {vmath.vector3(100, 150, 0), vmath.vector3(322, 150, 0), vmath.vector3(540, 150, 0)}
+	self.move_positions = {vmath.vector3(100, 200, 0), vmath.vector3(322, 200, 0), vmath.vector3(540, 200, 0)}
 	self.move_options = gf.generate_player_move_nodes(self.player, self.move_positions)
 
 	print("player gui init done")
@@ -78,13 +78,13 @@ function on_message(self, message_id, message, sender)
 		local combat_result_node = gui.get_node("combat_value")
 		if tonumber(message.health_change) > 0 then
 			gui.set_color(combat_result_node, vmath.vector4(0, 1, 0, 1))
-			gui.set_text(combat_result_node, "HP Change: +"..message.health_change)
+			gui.set_text(combat_result_node, "+"..message.health_change.." hp")
 		elseif tonumber(message.health_change) < 0 then
 			gui.set_color(combat_result_node, vmath.vector4(1, 0, 0, 1))
-			gui.set_text(combat_result_node, "HP Change: "..message.health_change)
+			gui.set_text(combat_result_node, message.health_change.." hp")
 		else
 			gui.set_color(combat_result_node, vmath.vector4(1, 1, 1, 1))
-			gui.set_text(combat_result_node, "HP Change: "..message.health_change)
+			gui.set_text(combat_result_node, "+"..message.health_change.." hp")
 		end
 
 		
@@ -107,16 +107,16 @@ function on_message(self, message_id, message, sender)
 		local effect_result_node = gui.get_node("effect_value")
 		if tonumber(effect_outcome.hp_change) > 0 then
 			gui.set_color(effect_result_node, vmath.vector4(0, 1, 0, 1))
-			gui.set_text(effect_result_node, "HP Change: +"..effect_outcome.hp_change)
+			gui.set_text(effect_result_node, "+"..effect_outcome.hp_change.." hp")
 		elseif tonumber(effect_outcome.hp_change) < 0 then
 			gui.set_color(effect_result_node, vmath.vector4(1, 0, 0, 1))
-			gui.set_text(effect_result_node, "HP Change: "..effect_outcome.hp_change)
+			gui.set_text(effect_result_node, effect_outcome.hp_change.." hp")
 		else
 			gui.set_color(effect_result_node, vmath.vector4(1, 1, 1, 1))
-			gui.set_text(effect_result_node, "HP Change: "..effect_outcome.hp_change)
+			gui.set_text(effect_result_node, "+"..effect_outcome.hp_change.." hp")
 		end
 
-		--clear previou effect nodes
+		--clear previous effect nodes
 		if next(self.effect_nodes) ~= nil then
 			for i, node in pairs(self.effect_nodes) do
 				gui.delete_node(node)
@@ -125,7 +125,7 @@ function on_message(self, message_id, message, sender)
 		end
 
 		--add an entry for each affect in the table
-		local upper_effect_node = effect_result_node
+		local upper_effect_node = gui.get_node("continuous_value")
 		for _, effect in pairs(self.effect_table) do
 			local new_effect_node = gui.clone(upper_effect_node)
 			table.insert(self.effect_nodes, new_effect_node)
@@ -134,13 +134,13 @@ function on_message(self, message_id, message, sender)
 
 			if tonumber(effect.hp_change) > 0 then
 				gui.set_color(new_effect_node, vmath.vector4(0, 1, 0, 1))
-				gui.set_text(new_effect_node, effect.name.." for +"..effect.hp_change.." for "..effect.duration.." turns")
+				gui.set_text(new_effect_node, effect.name..": +"..effect.hp_change.."hp for "..effect.duration.." turn(s)")
 			elseif tonumber(effect.hp_change) < 0 then
 				gui.set_color(new_effect_node, vmath.vector4(1, 0, 0, 1))
-				gui.set_text(new_effect_node, effect.name.." for "..effect.hp_change.." for "..effect.duration.." turns")
+				gui.set_text(new_effect_node, effect.name..": "..effect.hp_change.."hp for "..effect.duration.." turn(s)")
 			else
 				gui.set_color(new_effect_node, vmath.vector4(1, 1, 1, 1))
-				gui.set_text(new_effect_node, effect.name.." for "..effect.hp_change.." for "..effect.duration.." turns")
+				gui.set_text(new_effect_node, effect.name..": "..effect.hp_change.."hp for "..effect.duration.." turn(s)")
 			end
 			upper_effect_node = new_effect_node
 		end
