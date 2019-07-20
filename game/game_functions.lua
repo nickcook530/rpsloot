@@ -149,6 +149,7 @@ end
 
 --trigger effects to take action
 function gf.trigger_effects(health, effect_table)
+	local initial_health = health
 	for k, effect in pairs(effect_table) do
 		health = health + effect.hp_change
 		effect.duration = effect.duration - 1
@@ -156,7 +157,8 @@ function gf.trigger_effects(health, effect_table)
 			table.remove(effect_table, k)
 		end
 	end
-	return {health = health, effect_table = effect_table}
+	local hp_change = health - initial_health
+	return {health = health, hp_change = hp_change, effect_table = effect_table}
 end
 
 function gf.add_new_effects(new_effects, effect_table)

@@ -2,7 +2,7 @@ local gd = require "game.game_data"
 local gf = require "game.game_functions"
 --NEED TO SET PLAYER BASED ON CLASS CHOSEN
 
---local clear_results_timer --maybe should just be a self variable??
+
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
@@ -10,9 +10,11 @@ function init(self)
 	self.player = gd.player.current_class
 	self.health = self.player.health
 	self.effect_table = {} --table to hold effects that last multiple turns
+	self.effect_nodes = {} --create table for clearing later
+	
 	gui.set_text(gui.get_node("player_health"), "Player health: "..self.health)
 	
-	self.move_positions = {vmath.vector3(100, 100, 0), vmath.vector3(322, 100, 0), vmath.vector3(540, 100, 0)}
+	self.move_positions = {vmath.vector3(100, 150, 0), vmath.vector3(322, 150, 0), vmath.vector3(540, 150, 0)}
 	self.move_options = gf.generate_player_move_nodes(self.player, self.move_positions)
 
 	print("player gui init done")
@@ -72,6 +74,23 @@ function on_message(self, message_id, message, sender)
 		
 		self.health = self.health + message.health_change
 
+		--display numeric results color coded for gain (green) or loss (red)
+		local combat_result_node = gui.get_node("combat_value")
+		if tonumber(message.health_change) > 0 then
+			gui.set_color(combat_result_node, vmath.vector4(0, 1, 0, 1))
+			gui.set_text(combat_result_node, "HP Change: +"..message.health_change)
+		elseif tonumber(message.health_change) < 0 then
+			gui.set_color(combat_result_node, vmath.vector4(1, 0, 0, 1))
+			gui.set_text(combat_result_node, "HP Change: "..message.health_change)
+		else
+			gui.set_color(combat_result_node, vmath.vector4(1, 1, 1, 1))
+			gui.set_text(combat_result_node, "HP Change: "..message.health_change)
+		end
+
+		
+		
+		
+
 		print("prior to adding")
 		pprint(self.effect_table)
 		--take action on effects currently on character
@@ -83,6 +102,48 @@ function on_message(self, message_id, message, sender)
 		self.effect_table = gf.add_new_effects(message.effect_change, self.effect_table)
 		print("after adding")
 		pprint(self.effect_table)
+
+		--print out net changes in health from affects
+		local effect_result_node = gui.get_node("effect_value")
+		if tonumber(effect_outcome.hp_change) > 0 then
+			gui.set_color(effect_result_node, vmath.vector4(0, 1, 0, 1))
+			gui.set_text(effect_result_node, "HP Change: +"..effect_outcome.hp_change)
+		elseif tonumber(effect_outcome.hp_change) < 0 then
+			gui.set_color(effect_result_node, vmath.vector4(1, 0, 0, 1))
+			gui.set_text(effect_result_node, "HP Change: "..effect_outcome.hp_change)
+		else
+			gui.set_color(effect_result_node, vmath.vector4(1, 1, 1, 1))
+			gui.set_text(effect_result_node, "HP Change: "..effect_outcome.hp_change)
+		end
+
+		--clear previou effect nodes
+		if next(self.effect_nodes) ~= nil then
+			for i, node in pairs(self.effect_nodes) do
+				gui.delete_node(node)
+				table.remove(self.effect_nodes, i)
+			end
+		end
+
+		--add an entry for each affect in the table
+		local upper_effect_node = effect_result_node
+		for _, effect in pairs(self.effect_table) do
+			local new_effect_node = gui.clone(upper_effect_node)
+			table.insert(self.effect_nodes, new_effect_node)
+			local upper_position_y = gui.get_position(upper_effect_node)
+			gui.set_position(new_effect_node, upper_position_y-vmath.vector3(0, 20,0))
+
+			if tonumber(effect.hp_change) > 0 then
+				gui.set_color(new_effect_node, vmath.vector4(0, 1, 0, 1))
+				gui.set_text(new_effect_node, effect.name.." for +"..effect.hp_change.." for "..effect.duration.." turns")
+			elseif tonumber(effect.hp_change) < 0 then
+				gui.set_color(new_effect_node, vmath.vector4(1, 0, 0, 1))
+				gui.set_text(new_effect_node, effect.name.." for "..effect.hp_change.." for "..effect.duration.." turns")
+			else
+				gui.set_color(new_effect_node, vmath.vector4(1, 1, 1, 1))
+				gui.set_text(new_effect_node, effect.name.." for "..effect.hp_change.." for "..effect.duration.." turns")
+			end
+			upper_effect_node = new_effect_node
+		end
 		
 		gui.set_text(gui.get_node("player_health"), "Player health: "..self.health)
 		print("PLAYER hp: " ..self.health)

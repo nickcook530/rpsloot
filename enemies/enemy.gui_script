@@ -8,7 +8,7 @@ function init(self)
 
 	self.enemy = nil
 	self.effect_table = {}
-	self.move_positions = {vmath.vector3(100, 860, 0), vmath.vector3(322, 860, 0), vmath.vector3(540, 860, 0)}
+	self.move_positions = {vmath.vector3(100, 810, 0), vmath.vector3(322, 810, 0), vmath.vector3(540, 810, 0)}
 	self.move_options = nil
 	
 	print("enemy gui init done")
