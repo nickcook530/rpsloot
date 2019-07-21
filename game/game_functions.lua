@@ -71,6 +71,7 @@ function gf.generate_move_option(character)
 	return move
 end
 
+--[[
 function gf.generate_player_move_nodes(player, move_positions)
 	local return_table = {}
 	for i=1, 3 do
@@ -87,6 +88,7 @@ function gf.generate_player_move_nodes(player, move_positions)
 	end
 	return return_table
 end
+-]]
 
 function gf.generate_enemy_move_nodes(enemy, move_positions)
 	local return_table = {}

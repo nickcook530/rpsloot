@@ -61,18 +61,13 @@ function on_message(self, message_id, message, sender)
 		local enemy_result = outcome.enemy_result
 		local player_item = self.player_items[self.player_choice][player_result]
 		local enemy_item = self.enemy_items[self.enemy_choice][enemy_result]
-		pprint(player_item.effect)
 		
 		local player_health_change = player_item.heal - enemy_item.dmg
 		local player_effect_change = gf.get_effects("player", player_item.effect, enemy_item.effect)
-		print("player effects from game gui")
-		pprint(player_effect_change)
 		local player_outcome_actions = {health_change = player_health_change, effect_change = player_effect_change}
 
 		local enemy_health_change = enemy_item.heal - player_item.dmg
 		local enemy_effect_change = gf.get_effects("enemy", player_item.effect, enemy_item.effect)
-		print("enemy effects from game gui")
-		pprint(enemy_effect_change)
 		local enemy_outcome_actions = {health_change = enemy_health_change, effect_change = enemy_effect_change}
 
 		msg.post("/player/player#player", "outcome_actions", player_outcome_actions)

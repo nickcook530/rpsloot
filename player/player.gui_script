@@ -25,11 +25,14 @@ end
 
 function on_input(self, action_id, action)
 	if action_id == hash("touch") and action.released then
+		print(#self.hand)
 		for i=1, #self.hand do
+			
 			self.player_node_tree_selected = self.hand[i]
 			pprint(self.player_node_tree_selected)
 			local player_node_selected = self.player_node_tree_selected[hash("player_move")]
 			if gui.pick_node(player_node_selected, action.x, action.y) then
+				--if self.hand[i] == 0 then break end
 				msg.post("/game/game#game", "clear_results") --clear previous results
 								
 				local card_type_selected = self.player_node_tree_selected["card_type"] --used in player_choice message
@@ -41,22 +44,24 @@ function on_input(self, action_id, action)
 				--move card to center
 				gui.animate(player_node_selected, "position", vmath.vector3(320, 400, 0), gui.EASING_LINEAR, 1)
 
-				local empty_hand_position = self.hand_positions[i]
-				local new_deck_and_card = gf.draw_card(self.deck)
-				local new_card = new_deck_and_card.card
-				self.deck = new_deck_and_card.deck
+				--Using self.hand[2] to check because table.remove causes table entries to shift
+				--At the time of this call the hand still believes it has the previous node (remove last to avoid shift)
+				if next(self.deck) ~= nil and self.hand[2] ~= nil then
+					local empty_hand_position = self.hand_positions[i]
+					local new_deck_and_card = gf.draw_card(self.deck)
+					local new_card = new_deck_and_card.card
+					self.deck = new_deck_and_card.deck
+					self.hand[i] = gf.make_hand_node(new_card, empty_hand_position)
 
-				--remove card as selected
-				self.hand[i] = gf.make_hand_node(new_card, empty_hand_position)
-				
-				pprint(#self.deck)
-				
-		
-				--****** GOING TO NEED TO CHANGE THIS TO DRAW EVERY TURN THEN SHUFFLE NEW DECK *********
-				--generate next hand of cards if player runs out
-				if next(self.deck) == nil then
+				elseif next(self.deck) == nil and self.hand[2] == nil then
 					self.deck = gf.generate_deck(self.player)
+					self.hand = gf.initial_player_hand(self.deck, self.hand_positions)
+				else
+					--self.hand[i]=0
+					table.remove(self.hand, i)
 				end
+				print("DECK SIZE:")
+				pprint(#self.deck)
 				break
 			end
 		end
@@ -102,12 +107,6 @@ function on_message(self, message_id, message, sender)
 			gui.set_text(combat_result_node, "+"..message.health_change.." hp")
 		end
 
-		
-		
-		
-
-		print("prior to adding")
-		pprint(self.effect_table)
 		--take action on effects currently on character
 		local effect_outcome = gf.trigger_effects(self.health, self.effect_table)
 		self.health = effect_outcome.health
@@ -115,8 +114,6 @@ function on_message(self, message_id, message, sender)
 
 		--update effect table with new effects
 		self.effect_table = gf.add_new_effects(message.effect_change, self.effect_table)
-		print("after adding")
-		pprint(self.effect_table)
 
 		--print out net changes in health from affects
 		local effect_result_node = gui.get_node("effect_value")
