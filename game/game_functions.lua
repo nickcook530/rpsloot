@@ -5,6 +5,54 @@
 
 local gf = {}
 
+function gf.generate_deck(character)
+	local deck = {}
+	for i=1, character.shield_count do
+		table.insert(deck, character.shield)
+	end
+	for i=1, character.scroll_count do
+		table.insert(deck, character.scroll)
+	end
+	for i=1, character.sword_count do
+		table.insert(deck, character.sword)
+	end
+	for i=1, character.special_count do
+		table.insert(deck, character.special)
+	end
+	return deck
+end
+
+function gf.draw_card(deck)
+	local number = math.random(#deck)
+	local card = deck[number]
+	table.remove(deck, number)
+	return {deck=deck, card=card}
+end
+
+function gf.make_hand_node(player_card, position)
+	local card_tree = gui.clone_tree(gui.get_node("player_move"))
+	gui.set_text(card_tree[hash("move_text")], player_card.name)
+	gui.set_texture(card_tree[hash("move_image")], "player_items")
+	gui.play_flipbook(card_tree[hash("move_image")], player_card.type)
+	card_tree["card_type"] = player_card.type --type passed to game gui for logic
+	gui.set_position(card_tree[hash("player_move")], position)
+	
+	return card_tree
+end
+
+function gf.initial_player_hand(deck, move_positions)
+	local return_table = {}
+	for i=1, 3 do
+		local deck_and_card = gf.draw_card(deck)
+		local player_card = deck_and_card.card
+		
+		local card_tree = gf.make_hand_node(player_card, move_positions[i])
+
+		table.insert(return_table, card_tree)
+	end
+	return return_table
+end
+
 function gf.generate_move_option(character)
 	local move_number = math.random(100)
 	local special_number = math.random(100)

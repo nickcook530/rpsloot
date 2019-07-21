@@ -6,41 +6,56 @@ local gf = require "game.game_functions"
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
+	
 
 	self.player = gd.player.current_class
+	self.deck = gf.generate_deck(self.player)
 	self.health = self.player.health
 	self.effect_table = {} --table to hold effects that last multiple turns
 	self.effect_nodes = {} --create table for clearing later
 	
 	gui.set_text(gui.get_node("player_health"), "Player health: "..self.health)
 	
-	self.move_positions = {vmath.vector3(100, 200, 0), vmath.vector3(322, 200, 0), vmath.vector3(540, 200, 0)}
-	self.move_options = gf.generate_player_move_nodes(self.player, self.move_positions)
+	self.hand_positions = {vmath.vector3(100, 200, 0), vmath.vector3(322, 200, 0), vmath.vector3(540, 200, 0)}
+	--self.move_options = gf.generate_player_move_nodes(self.player, self.deck, self.move_positions)
+	self.hand = gf.initial_player_hand(self.deck, self.hand_positions)
 
 	print("player gui init done")
 end
 
 function on_input(self, action_id, action)
 	if action_id == hash("touch") and action.released then
-		for i=1, #self.move_options do
-			self.player_node_tree_selected = self.move_options[i]
+		for i=1, #self.hand do
+			self.player_node_tree_selected = self.hand[i]
+			pprint(self.player_node_tree_selected)
 			local player_node_selected = self.player_node_tree_selected[hash("player_move")]
 			if gui.pick_node(player_node_selected, action.x, action.y) then
 				msg.post("/game/game#game", "clear_results") --clear previous results
 								
-				local move_selected = self.player_node_tree_selected["move_type"] --used in player_choice message
-				print("You touched the: " .. move_selected)
+				local card_type_selected = self.player_node_tree_selected["card_type"] --used in player_choice message
+				print("You touched the: " .. card_type_selected)
 
 				msg.post("/enemy/enemy#enemy", "select_move") --tell enemy to select move
-				msg.post("/game/game#game", "player_choice", {["player_move"] = move_selected}) --tell game gui what move you selected
+				msg.post("/game/game#game", "player_choice", {["player_move"] = card_type_selected}) --tell game gui what card you selected
 
-				--remove moves as selected
-				table.remove(self.move_options, i)
+				--move card to center
 				gui.animate(player_node_selected, "position", vmath.vector3(320, 400, 0), gui.EASING_LINEAR, 1)
 
-				--generate next set of moves if player runs out
-				if next(self.move_options) == nil then
-					self.move_options = gf.generate_player_move_nodes(self.player, self.move_positions)
+				local empty_hand_position = self.hand_positions[i]
+				local new_deck_and_card = gf.draw_card(self.deck)
+				local new_card = new_deck_and_card.card
+				self.deck = new_deck_and_card.deck
+
+				--remove card as selected
+				self.hand[i] = gf.make_hand_node(new_card, empty_hand_position)
+				
+				pprint(#self.deck)
+				
+		
+				--****** GOING TO NEED TO CHANGE THIS TO DRAW EVERY TURN THEN SHUFFLE NEW DECK *********
+				--generate next hand of cards if player runs out
+				if next(self.deck) == nil then
+					self.deck = gf.generate_deck(self.player)
 				end
 				break
 			end
