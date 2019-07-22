@@ -9,9 +9,6 @@ function init(self)
 	self.clear_results_timer = nil
 	self.results_showing = false
 	
-	self.player_move_selected = nil
-	self.player_items = {}
-	
 	self.enemy_move_selected = nil
 	self.enemy_items = {}
 
@@ -36,10 +33,6 @@ function update(self, dt)
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == hash("player_items") then
-		self.player_items = message
-	end
-
 	if message_id == hash("enemy_setup_done") then
 		msg.post(sender, "send_items")
 	end
@@ -49,25 +42,26 @@ function on_message(self, message_id, message, sender)
 	end
 
 	if message_id == hash("player_choice") then
-		self.player_choice = message.player_move
+		self.player_card = message.card
 	end
 
 	if message_id == hash("enemy_choice") then
 		self.enemy_choice = message.enemy_move
 
-		local outcome = gf.determine_outcome(self.player_choice, self.enemy_choice)
+		local outcome = gf.determine_outcome(self.player_card.type, self.enemy_choice)
 
+		--get what effects the card will have based on a win or loss
 		local player_result = outcome.player_result
 		local enemy_result = outcome.enemy_result
-		local player_item = self.player_items[self.player_choice][player_result]
+		local player_card_actions = self.player_card[player_result]
 		local enemy_item = self.enemy_items[self.enemy_choice][enemy_result]
 		
-		local player_health_change = player_item.heal - enemy_item.dmg
-		local player_effect_change = gf.get_effects("player", player_item.effect, enemy_item.effect)
+		local player_health_change = player_card_actions.heal - enemy_item.dmg
+		local player_effect_change = gf.get_effects("player", player_card_actions.effect, enemy_item.effect)
 		local player_outcome_actions = {health_change = player_health_change, effect_change = player_effect_change}
 
-		local enemy_health_change = enemy_item.heal - player_item.dmg
-		local enemy_effect_change = gf.get_effects("enemy", player_item.effect, enemy_item.effect)
+		local enemy_health_change = enemy_item.heal - player_card_actions.dmg
+		local enemy_effect_change = gf.get_effects("enemy", player_card_actions.effect, enemy_item.effect)
 		local enemy_outcome_actions = {health_change = enemy_health_change, effect_change = enemy_effect_change}
 
 		msg.post("/player/player#player", "outcome_actions", player_outcome_actions)

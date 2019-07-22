@@ -2,7 +2,7 @@
 -- To get access to the functions, you need to put:
 -- require "my_directory.my_file"
 -- in any script using the functions.
-local item_creator = require("items.item_creator")
+local card_creator = require("cards.card_creator")
 local enemy_creator = require("enemies.enemy_creator")
 local class_creator = require("player.class_creator")
 
@@ -13,28 +13,28 @@ print(my_file_path)
 local M = sys.load(my_file_path) or {}
 
 -- next(M) == nil
-if true then -- While in development I'll just recreate each time
+if true then -- While in development I'll just recreate each time, in production us check above to see if save exists
 	print("Generator if statement start")
 
-	M.items = item_creator.generate_game_items()
+	M.cards = card_creator.generate_game_cards()
 
 	M.enemies = enemy_creator.generate_game_enemies()
 	for key, enemy in pairs(M.enemies) do
-		enemy.shield = M.items.shield[enemy.shield]
-		enemy.scroll = M.items.scroll[enemy.scroll]
-		enemy.sword = M.items.sword[enemy.sword]
-		enemy.special = M.items.special[enemy.special]
+		enemy.shield = M.cards.shield[enemy.shield]
+		enemy.scroll = M.cards.scroll[enemy.scroll]
+		enemy.sword = M.cards.sword[enemy.sword]
+		enemy.special = M.cards.special[enemy.special]
 	end
 
 	M.classes = class_creator.generate_game_classes()
 	for key, class in pairs(M.classes) do
-		class.shield = M.items.shield[class.shield] --creator just gives it the name, need to reference full item from items table
-		class.scroll = M.items.scroll[class.scroll]
-		class.sword = M.items.sword[class.sword]
-		class.special = M.items.special[class.special]
-		class.inventory.shield = class.shield --build out class inventory
-		class.inventory.scroll = class.scroll
-		class.inventory.sword = class.sword
+		class.shield = M.cards.shield[class.shield] --creator just gives it the name, need to reference full card from card table
+		class.scroll = M.cards.scroll[class.scroll]
+		class.sword = M.cards.sword[class.sword]
+		class.special = M.cards.special[class.special]
+		class.collection.shield = class.shield --build out class basic collection
+		class.collection.scroll = class.scroll
+		class.collection.sword = class.sword
 		pprint(class)
 	end
 

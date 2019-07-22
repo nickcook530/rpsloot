@@ -9,7 +9,7 @@ fonts {
 }
 textures {
   name: "enemy_items"
-  texture: "/items/items.atlas"
+  texture: "/cards/cards.atlas"
 }
 background_color {
   x: 0.0

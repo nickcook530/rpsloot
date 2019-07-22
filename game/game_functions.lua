@@ -30,12 +30,12 @@ function gf.draw_card(deck)
 end
 
 function gf.make_hand_node(player_card, position)
-	local card_tree = gui.clone_tree(gui.get_node("player_move"))
-	gui.set_text(card_tree[hash("move_text")], player_card.name)
-	gui.set_texture(card_tree[hash("move_image")], "player_items")
-	gui.play_flipbook(card_tree[hash("move_image")], player_card.type)
-	card_tree["card_type"] = player_card.type --type passed to game gui for logic
-	gui.set_position(card_tree[hash("player_move")], position)
+	local card_tree = gui.clone_tree(gui.get_node("player_card"))
+	gui.set_text(card_tree[hash("card_text")], player_card.name)
+	gui.set_texture(card_tree[hash("card_image")], "player_items")
+	gui.play_flipbook(card_tree[hash("card_image")], player_card.type)
+	card_tree["card_details"] = player_card --passed to game gui for logic
+	gui.set_position(card_tree[hash("player_card")], position)
 	
 	return card_tree
 end
@@ -71,25 +71,6 @@ function gf.generate_move_option(character)
 	return move
 end
 
---[[
-function gf.generate_player_move_nodes(player, move_positions)
-	local return_table = {}
-	for i=1, 3 do
-		local player_move = gf.generate_move_option(player)
-		local move_tree = gui.clone_tree(gui.get_node("player_move"))
-
-		gui.set_text(move_tree[hash("move_text")], player[player_move]["name"])
-		gui.set_texture(move_tree[hash("move_image")], "player_items")
-		gui.play_flipbook(move_tree[hash("move_image")], player_move)
-		gui.set_position(move_tree[hash("player_move")], move_positions[i])
-		move_tree["move_type"] = player_move
-
-		table.insert(return_table, move_tree)
-	end
-	return return_table
-end
--]]
-
 function gf.generate_enemy_move_nodes(enemy, move_positions)
 	local return_table = {}
 	for i=1, 3 do
@@ -116,57 +97,57 @@ function gf.health_change(character, heal, dmg)
 	return character.health
 end
 
-function gf.determine_outcome(player_move, enemy_move)
-	if player_move == "shield" then
-		if enemy_move == "shield" then
+function gf.determine_outcome(player_card_type, enemy_card_type)
+	if player_card_type == "shield" then
+		if enemy_card_type == "shield" then
 			return {player_result = "tie", enemy_result = "tie"}
-		elseif enemy_move == "scroll" then
+		elseif enemy_card_type == "scroll" then
 			return {player_result = "loss", enemy_result = "win"}
-		elseif enemy_move == "sword" then
+		elseif enemy_card_type == "sword" then
 			return {player_result = "win", enemy_result = "loss"}
-		elseif enemy_move == "special" then
+		elseif enemy_card_type == "special" then
 			return {player_result = "loss", enemy_result = "win"}
 		else
-			print("NO RESULT FOUND FOR "..player_move)
+			print("NO RESULT FOUND FOR "..player_card_type)
 		end
 
-	elseif player_move == "scroll" then
-		if enemy_move == "shield" then
+	elseif player_card_type == "scroll" then
+		if enemy_card_type == "shield" then
 			return {player_result = "win", enemy_result = "loss"}
-		elseif enemy_move == "scroll" then
+		elseif enemy_card_type == "scroll" then
 			return {player_result = "tie", enemy_result = "tie"}
-		elseif enemy_move == "sword" then
+		elseif enemy_card_type == "sword" then
 			return {player_result = "loss", enemy_result = "win"}
-		elseif enemy_move == "special" then
+		elseif enemy_card_type == "special" then
 			return {player_result = "loss", enemy_result = "win"}
 		else
-			print("NO RESULT FOUND FOR "..player_move)
+			print("NO RESULT FOUND FOR "..player_card_type)
 		end 
 
-	elseif player_move == "sword" then
-		if enemy_move == "shield" then
+	elseif player_card_type == "sword" then
+		if enemy_card_type == "shield" then
 			return {player_result = "loss", enemy_result = "win"}
-		elseif enemy_move == "scroll" then
+		elseif enemy_card_type == "scroll" then
 			return {player_result = "win", enemy_result = "loss"}
-		elseif enemy_move == "sword" then
+		elseif enemy_card_type == "sword" then
 			return {player_result = "tie", enemy_result = "tie"}
-		elseif enemy_move == "special" then
+		elseif enemy_card_type == "special" then
 			return {player_result = "loss", enemy_result = "win"}
 		else
-			print("NO RESULT FOUND FOR "..player_move)
+			print("NO RESULT FOUND FOR "..player_card_type)
 		end 
 
-	elseif player_move == "special" then
-		if enemy_move == "shield" then
+	elseif player_card_type == "special" then
+		if enemy_card_type == "shield" then
 			return {player_result = "win", enemy_result = "loss"}
-		elseif enemy_move == "scroll" then
+		elseif enemy_card_type == "scroll" then
 			return {player_result = "win", enemy_result = "loss"}
-		elseif enemy_move == "sword" then
+		elseif enemy_card_type == "sword" then
 			return {player_result = "win", enemy_result = "loss"}
-		elseif enemy_move == "special" then
+		elseif enemy_card_type == "special" then
 			return {player_result = "tie", enemy_result = "tie"} --might be easiest to just handle this as a win?
 		else
-			print("NO RESULT FOUND FOR "..player_move)
+			print("NO RESULT FOUND FOR "..player_card_type)
 		end 
 	else
 		print("ERROR ON OUTCOME")

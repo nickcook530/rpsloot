@@ -9,7 +9,7 @@ fonts {
 }
 textures {
   name: "player_items"
-  texture: "/items/items.atlas"
+  texture: "/cards/cards.atlas"
 }
 background_color {
   x: 0.0
@@ -51,7 +51,7 @@ nodes {
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
   texture: ""
-  id: "player_move"
+  id: "player_card"
   xanchor: XANCHOR_LEFT
   yanchor: YANCHOR_BOTTOM
   pivot: PIVOT_CENTER
@@ -105,12 +105,12 @@ nodes {
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
   texture: ""
-  id: "move_image"
+  id: "card_image"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
-  parent: "player_move"
+  parent: "player_card"
   layer: ""
   inherit_alpha: false
   slice9 {
@@ -161,7 +161,7 @@ nodes {
   blend_mode: BLEND_MODE_ALPHA
   text: ""
   font: "generic_font"
-  id: "move_text"
+  id: "card_text"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
@@ -179,7 +179,7 @@ nodes {
   }
   adjust_mode: ADJUST_MODE_FIT
   line_break: false
-  parent: "player_move"
+  parent: "player_card"
   layer: ""
   inherit_alpha: false
   alpha: 1.0

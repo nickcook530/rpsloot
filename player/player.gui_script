@@ -7,7 +7,6 @@ local gf = require "game.game_functions"
 function init(self)
 	msg.post(".", "acquire_input_focus")
 	
-
 	self.player = gd.player.current_class
 	self.deck = gf.generate_deck(self.player)
 	self.health = self.player.health
@@ -17,7 +16,6 @@ function init(self)
 	gui.set_text(gui.get_node("player_health"), "Player health: "..self.health)
 	
 	self.hand_positions = {vmath.vector3(100, 200, 0), vmath.vector3(322, 200, 0), vmath.vector3(540, 200, 0)}
-	--self.move_options = gf.generate_player_move_nodes(self.player, self.deck, self.move_positions)
 	self.hand = gf.initial_player_hand(self.deck, self.hand_positions)
 
 	print("player gui init done")
@@ -25,21 +23,22 @@ end
 
 function on_input(self, action_id, action)
 	if action_id == hash("touch") and action.released then
-		print(#self.hand)
 		for i=1, #self.hand do
-			
+
+			--Setting the entire tree to instance variable so it can manipulated (cleared) later
 			self.player_node_tree_selected = self.hand[i]
-			pprint(self.player_node_tree_selected)
-			local player_node_selected = self.player_node_tree_selected[hash("player_move")]
+
+			--get the exact node from tree to check for selection and animate
+			local player_node_selected = self.player_node_tree_selected[hash("player_card")]
+
 			if gui.pick_node(player_node_selected, action.x, action.y) then
-				--if self.hand[i] == 0 then break end
 				msg.post("/game/game#game", "clear_results") --clear previous results
 								
-				local card_type_selected = self.player_node_tree_selected["card_type"] --used in player_choice message
-				print("You touched the: " .. card_type_selected)
+				local card_selected = self.player_node_tree_selected.card_details --used to send to game gui to have all details
+				print("You touched the: " .. card_selected.type)
 
 				msg.post("/enemy/enemy#enemy", "select_move") --tell enemy to select move
-				msg.post("/game/game#game", "player_choice", {["player_move"] = card_type_selected}) --tell game gui what card you selected
+				msg.post("/game/game#game", "player_choice", {card = card_selected}) --tell game gui what card you selected
 
 				--move card to center
 				gui.animate(player_node_selected, "position", vmath.vector3(320, 400, 0), gui.EASING_LINEAR, 1)
@@ -66,7 +65,8 @@ function on_input(self, action_id, action)
 			end
 		end
 	end
-	
+
+	---no game function just used to test input
 	if action_id == hash("space") then
 		print("player gui spacebar")
 	end
@@ -84,14 +84,10 @@ function update(self, dt)
 end
 
 function on_message(self, message_id, message, sender)
-	--send items to game gui script
-	if message_id == hash("send_items") then
-		msg.post(sender, "player_items", {shield=self.player.shield, scroll=self.player.scroll, sword = self.player.sword, special=self.player.special})
-	end
-
 	if message_id == hash("outcome_actions") then
-		self.previous_node_selected = self.player_node_tree_selected[hash("player_move")] --set node to be cleared manually
-		
+		self.previous_node_selected = self.player_node_tree_selected[hash("player_card")] --set node to be cleared manually
+
+		--update player health
 		self.health = self.health + message.health_change
 
 		--display numeric results color coded for gain (green) or loss (red)
@@ -136,7 +132,7 @@ function on_message(self, message_id, message, sender)
 			end
 		end
 
-		--add an entry for each affect in the table
+		--add an entry for each effect in the table
 		local upper_effect_node = gui.get_node("continuous_value")
 		for _, effect in pairs(self.effect_table) do
 			local new_effect_node = gui.clone(upper_effect_node)
@@ -156,14 +152,18 @@ function on_message(self, message_id, message, sender)
 			end
 			upper_effect_node = new_effect_node
 		end
-		
+
+		--update visual to new player health
 		gui.set_text(gui.get_node("player_health"), "Player health: "..self.health)
 		print("PLAYER hp: " ..self.health)
+
+		--check to see if health is 0 (and player loses)
 		if self.health <= 0 then
 			msg.post("/game/game#game", "player_health_0")
 		end
 	end
-	
+
+	--clear previously selected card
 	if message_id == hash("delete_previous_node") then
 		gui.delete_node(self.previous_node_selected)
 		self.previous_node_selected = nil
