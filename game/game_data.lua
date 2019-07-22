@@ -38,13 +38,14 @@ if true then -- While in development I'll just recreate each time, in production
 		pprint(class)
 	end
 
-	M.player = {current_class = M.classes["rogue"], current_level = 1, special = {}}
+	M.player = {current_class = M.classes["rogue"], current_level = 1}
 	
 	sys.save(my_file_path, M)
 	
 	print("Generator if statement end")
 end
 
+--advance player one level on win or reset on loss
 function update_player_level(trigger)
 	if trigger == "next" then
 		M.player.current_level = M.player.current_level + 1

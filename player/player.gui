@@ -8,7 +8,7 @@ fonts {
   font: "/assets/fonts/large_generic_font.font"
 }
 textures {
-  name: "player_items"
+  name: "player_card_textures"
   texture: "/cards/cards.atlas"
 }
 background_color {
@@ -19,8 +19,8 @@ background_color {
 }
 nodes {
   position {
-    x: -121.0
-    y: -96.0
+    x: -400.0
+    y: -100.0
     z: 0.0
     w: 1.0
   }

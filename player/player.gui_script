@@ -16,7 +16,7 @@ function init(self)
 	gui.set_text(gui.get_node("player_health"), "Player health: "..self.health)
 	
 	self.hand_positions = {vmath.vector3(100, 200, 0), vmath.vector3(322, 200, 0), vmath.vector3(540, 200, 0)}
-	self.hand = gf.initial_player_hand(self.deck, self.hand_positions)
+	self.hand = gf.initial_hand("player", self.deck, self.hand_positions)
 
 	print("player gui init done")
 end
@@ -37,7 +37,7 @@ function on_input(self, action_id, action)
 				local card_selected = self.player_node_tree_selected.card_details --used to send to game gui to have all details
 				print("You touched the: " .. card_selected.type)
 
-				msg.post("/enemy/enemy#enemy", "select_move") --tell enemy to select move
+				msg.post("/enemy/enemy#enemy", "select_card") --tell enemy to select card
 				msg.post("/game/game#game", "player_choice", {card = card_selected}) --tell game gui what card you selected
 
 				--move card to center
@@ -50,13 +50,11 @@ function on_input(self, action_id, action)
 					local new_deck_and_card = gf.draw_card(self.deck)
 					local new_card = new_deck_and_card.card
 					self.deck = new_deck_and_card.deck
-					self.hand[i] = gf.make_hand_node(new_card, empty_hand_position)
-
+					self.hand[i] = gf.make_player_hand_node(new_card, empty_hand_position)
 				elseif next(self.deck) == nil and self.hand[2] == nil then
 					self.deck = gf.generate_deck(self.player)
-					self.hand = gf.initial_player_hand(self.deck, self.hand_positions)
+					self.hand = gf.initial_hand("player", self.deck, self.hand_positions)
 				else
-					--self.hand[i]=0
 					table.remove(self.hand, i)
 				end
 				print("DECK SIZE:")

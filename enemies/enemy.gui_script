@@ -6,10 +6,10 @@ local gf = require "game.game_functions"
 function init(self)
 	msg.post(".", "acquire_input_focus")
 
-	self.enemy = nil
+	self.enemy = nil --left blank because game gui decides the level
 	self.effect_table = {}
-	self.move_positions = {vmath.vector3(100, 810, 0), vmath.vector3(322, 810, 0), vmath.vector3(540, 810, 0)}
-	self.move_options = nil
+	self.hand_positions = {vmath.vector3(100, 810, 0), vmath.vector3(322, 810, 0), vmath.vector3(540, 810, 0)}
+	self.hand = nil --left blank because game gui decides the level
 	
 	print("enemy gui init done")
 end
@@ -28,42 +28,50 @@ end
 function on_message(self, message_id, message, sender)
 	if message_id == hash("setup") then
 		self.enemy = gd.enemies[message["level"]] --set enemy based on the level
+
+		self.deck = gf.generate_deck(self.enemy)
+		
 		self.health = self.enemy.health
 		gui.set_text(gui.get_node("enemy_health"), "Enemy health: "..self.health)
-		self.move_options = gf.generate_enemy_move_nodes(self.enemy, self.move_positions)
+		
+		self.hand = gf.initial_hand("enemy", self.deck, self.hand_positions)
 		msg.post("/game/game#game", "enemy_setup_done")
 	end
 
-	--send items to game gui script
-	if message_id == hash("send_items") then
-		msg.post(sender, "enemy_items", {shield=self.enemy.shield, scroll=self.enemy.scroll, sword=self.enemy.sword, special=self.enemy.special})
-	end
+	--prompt enemy to select a card
+	if message_id == hash("select_card") then
 
-	--prompt enemy to select a move
-	if message_id == hash("select_move") then
-		local random_choice = math.random(#self.move_options)
-		self.enemy_node_tree_selected = self.move_options[random_choice]
-		local enemy_node_selected = self.enemy_node_tree_selected[hash("enemy_move")]
+		local random_num = math.random(#self.hand)
+		
+		self.enemy_node_tree_selected = self.hand[random_num]
+		local enemy_node_selected = self.enemy_node_tree_selected[hash("enemy_card")]
 
 		gui.animate(enemy_node_selected, "position", vmath.vector3(320, 560, 0), gui.EASING_LINEAR, 1)
 
-		--remove moves as selected
-		table.remove(self.move_options, random_choice)
-
-		--generate new enemy options if needed
-		if next(self.move_options) == nil then
-			self.move_options = gf.generate_enemy_move_nodes(self.enemy, self.move_positions)
+		--Using self.hand[2] to check because table.remove causes table entries to shift
+		--At the time of this call the hand still believes it has the previous node (remove last to avoid shift)
+		if next(self.deck) ~= nil and self.hand[2] ~= nil then
+			local empty_hand_position = self.hand_positions[random_num]
+			local new_deck_and_card = gf.draw_card(self.deck)
+			local new_card = new_deck_and_card.card
+			self.deck = new_deck_and_card.deck
+			self.hand[random_num] = gf.make_enemy_hand_node(new_card, empty_hand_position)
+		elseif next(self.deck) == nil and self.hand[2] == nil then
+			self.deck = gf.generate_deck(self.enemy)
+			self.hand = gf.initial_hand("enemy", self.deck, self.hand_positions)
+		else
+			table.remove(self.hand, random_num)
 		end
-		
-		local enemy_move = self.enemy_node_tree_selected["move_type"]
-		print("Enemy selected: " .. enemy_move)
 
-		msg.post("/game/game#game", "enemy_choice", {["enemy_move"] = enemy_move})
+		--pass details about selected card to game gui logic
+		local card_selected = self.enemy_node_tree_selected.card_details
+		msg.post("/game/game#game", "enemy_choice", {card = card_selected})
+		print("Enemy selected: " .. card_selected.type)
 		
 	end
 
 	if message_id == hash("outcome_actions") then
-		self.previous_node_selected = self.enemy_node_tree_selected[hash("enemy_move")] --set last node to be deleted manually
+		self.previous_node_selected = self.enemy_node_tree_selected[hash("enemy_card")] --set last node to be deleted manually
 		
 		self.health = self.health + message.health_change
 
@@ -77,6 +85,7 @@ function on_message(self, message_id, message, sender)
 		
 		gui.set_text(gui.get_node("enemy_health"), "Enemy health: "..self.health)
 		print("ENEMY hp: " ..self.health)
+		
 		if self.health <= 0 then
 			msg.post("/game/game#game", "enemy_health_0")
 		end

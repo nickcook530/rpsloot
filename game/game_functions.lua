@@ -29,66 +29,45 @@ function gf.draw_card(deck)
 	return {deck=deck, card=card}
 end
 
-function gf.make_hand_node(player_card, position)
+function gf.make_player_hand_node(card, position)
 	local card_tree = gui.clone_tree(gui.get_node("player_card"))
-	gui.set_text(card_tree[hash("card_text")], player_card.name)
-	gui.set_texture(card_tree[hash("card_image")], "player_items")
-	gui.play_flipbook(card_tree[hash("card_image")], player_card.type)
-	card_tree["card_details"] = player_card --passed to game gui for logic
+	gui.set_text(card_tree[hash("card_text")], card.name)
+	gui.set_texture(card_tree[hash("card_image")], "player_card_textures")
+	gui.play_flipbook(card_tree[hash("card_image")], card.type)
+	card_tree["card_details"] = card --passed to game gui for logic
 	gui.set_position(card_tree[hash("player_card")], position)
 	
 	return card_tree
 end
 
-function gf.initial_player_hand(deck, move_positions)
+function gf.make_enemy_hand_node(card, position)
+	local card_tree = gui.clone_tree(gui.get_node("enemy_card"))
+	gui.set_text(card_tree[hash("card_text")], card.name)
+	gui.set_texture(card_tree[hash("card_image")], "enemy_card_textures")
+	gui.play_flipbook(card_tree[hash("card_image")], card.type)
+	card_tree["card_details"] = card --passed to game gui for logic
+	gui.set_position(card_tree[hash("enemy_card")], position)
+
+	return card_tree
+end
+
+
+function gf.initial_hand(character, deck, hand_positions)
 	local return_table = {}
 	for i=1, 3 do
 		local deck_and_card = gf.draw_card(deck)
-		local player_card = deck_and_card.card
+		local card = deck_and_card.card
+		local card_tree = nil
 		
-		local card_tree = gf.make_hand_node(player_card, move_positions[i])
+		if character == "player" then
+			card_tree = gf.make_player_hand_node(card, hand_positions[i])
+		elseif character == "enemy" then
+			card_tree = gf.make_enemy_hand_node(card, hand_positions[i])
+		end
 
 		table.insert(return_table, card_tree)
 	end
 	return return_table
-end
-
-function gf.generate_move_option(character)
-	local move_number = math.random(100)
-	local special_number = math.random(100)
-	local move = nil
-
-	if move_number <= character.shield_range_upper then
-		move = "shield"
-	elseif move_number > character.shield_range_upper and move_number <= character.scroll_range_upper then
-		move = "scroll"
-	elseif move_number > character.scroll_range_upper and move_number <= character.sword_range_upper then
-		move = "sword"
-	end
-	if special_number <= character.special_range_upper then
-		move = "special"
-	end
-	return move
-end
-
-function gf.generate_enemy_move_nodes(enemy, move_positions)
-	local return_table = {}
-	for i=1, 3 do
-		local enemy_move = gf.generate_move_option(enemy)
-		local move_tree = gui.clone_tree(gui.get_node("enemy_move"))
-		gui.set_text(move_tree[hash("move_text")], enemy[enemy_move]["name"])
-		gui.set_texture(move_tree[hash("move_image")], "enemy_items")
-		gui.play_flipbook(move_tree[hash("move_image")], enemy_move)
-		gui.set_position(move_tree[hash("enemy_move")], move_positions[i])
-		move_tree["move_type"] = enemy_move
-		table.insert(return_table, move_tree)
-	end
-	return return_table
-end
-
-function gf.select_move(move_options)
-	local move_number = math.random(#move_options)
-	return move_options[move_number]
 end
 
 function gf.health_change(character, heal, dmg)
@@ -155,22 +134,22 @@ function gf.determine_outcome(player_card_type, enemy_card_type)
 end
 
 
---given items correctly distribute effects to player or enemy
-function gf.get_effects(caller, player_item_effect, enemy_item_effect)
+--given cards correctly distribute effects to player or enemy
+function gf.get_effects(caller, player_card_effect, enemy_card_effect)
 	local effects = {}
 	if caller == "player" then
-		if player_item_effect.target == "self" then
-			table.insert(effects, player_item_effect)
-		elseif enemy_item_effect.target == "opponent" then
-			table.insert(effects, enemy_item_effect)
+		if player_card_effect.target == "self" then
+			table.insert(effects, player_card_effect)
+		elseif enemy_card_effect.target == "opponent" then
+			table.insert(effects, enemy_card_effect)
 		else
 			print("NO EFFECTS for player")
 		end
 	elseif caller == "enemy" then
-		if player_item_effect.target == "opponent" then
-			table.insert(effects, player_item_effect)
-		elseif enemy_item_effect.target == "self" then
-			table.insert(effects, enemy_item_effect)
+		if player_card_effect.target == "opponent" then
+			table.insert(effects, player_card_effect)
+		elseif enemy_card_effect.target == "self" then
+			table.insert(effects, enemy_card_effect)
 		else
 			print("NO EFFECTS for enemy")
 		end

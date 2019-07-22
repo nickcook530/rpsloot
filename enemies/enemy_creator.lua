@@ -7,26 +7,26 @@ local functions = {}
 
 local game_enemies = {}
 
---Could probably remove OOP design considering limitations of sys.save (no functions)
+--Could probably remove OOP design considering limitations of sys.save (cant' save functions)
 local enemy = {}
 enemy.__index = enemy
 
-function enemy.new(name, health, shield, shield_range_upper, scroll, scroll_range_upper, sword, sword_range_upper, special, special_range_upper)
-	return setmetatable({name = name, health = health, shield = shield, shield_range_upper = shield_range_upper,
-		scroll = scroll, scroll_range_upper = scroll_range_upper, sword = sword, sword_range_upper = sword_range_upper, 
-		special = special, special_range_upper = special_range_upper}, enemy)
+function enemy.new(name, health, shield, shield_count, scroll, scroll_count, sword, sword_count, special, special_count)
+	return setmetatable({name = name, health = health, shield = shield, shield_count = shield_count,
+		scroll = scroll, scroll_count = scroll_count, sword = sword, sword_count = sword_count, 
+		special = special, special_count = special_count}, enemy)
 end
 
-local function create_new_enemy(name, health, shield, shield_range_upper, scroll, scroll_range_upper, sword, sword_range_upper, special, special_range_upper)
-	local enemy_table = enemy.new(name, health, shield, shield_range_upper, scroll, scroll_range_upper, sword, sword_range_upper, special, special_range_upper)
+local function create_new_enemy(name, health, shield, shield_count, scroll, scroll_count, sword, sword_count, special, special_count)
+	local enemy_table = enemy.new(name, health, shield, shield_count, scroll, scroll_count, sword, sword_count, special, special_count)
 	table.insert(game_enemies, enemy_table)
 
 	print(enemy_table["name"] .. " CREATED")
 end
 
 function functions.generate_game_enemies()
-	create_new_enemy("Enemy Level 1", 30, "basic_shield_1", 0, "fire_scroll_1", 80, "basic_sword_1", 100, "test_special", 10)
-	create_new_enemy("Enemy Level 2", 3, "basic_shield_1", 20, "fire_scroll_1", 50, "basic_sword_1", 100, "test_special", 10)
+	create_new_enemy("Enemy Level 1", 3, "basic_shield_1", 2, "fire_scroll_1", 6, "basic_sword_1", 1, "test_special", 1)
+	create_new_enemy("Enemy Level 2", 30, "basic_shield_1", 2, "fire_scroll_1", 6, "basic_sword_1", 1, "test_special", 1)
 	return game_enemies
 end
 
