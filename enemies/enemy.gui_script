@@ -32,7 +32,7 @@ function on_message(self, message_id, message, sender)
 		self.deck = gf.generate_deck(self.enemy)
 		
 		self.health = self.enemy.health
-		gui.set_text(gui.get_node("enemy_health"), "Enemy health: "..self.health)
+		gui.set_text(gui.get_node("enemy_health"), "Enemy hp: "..self.health)
 		
 		self.hand = gf.initial_hand("enemy", self.deck, self.hand_positions)
 		msg.post("/game/game#game", "enemy_setup_done")
@@ -83,7 +83,7 @@ function on_message(self, message_id, message, sender)
 		--update effect table with new effects
 		self.effect_table = gf.add_new_effects(message.effect_change, self.effect_table)
 		
-		gui.set_text(gui.get_node("enemy_health"), "Enemy health: "..self.health)
+		gui.set_text(gui.get_node("enemy_health"), "Enemy hp: "..self.health)
 		print("ENEMY hp: " ..self.health)
 		
 		if self.health <= 0 then

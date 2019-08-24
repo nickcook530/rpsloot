@@ -5,8 +5,19 @@
 
 local gf = {}
 
+function gf.FYShuffle( tInput ) --Implementation of Fisher Yates shuffling method
+	local tReturn = {}
+	for i = #tInput, 1, -1 do
+		local j = math.random(i)
+		tInput[i], tInput[j] = tInput[j], tInput[i]
+		table.insert(tReturn, tInput[i])
+	end
+	return tReturn
+end
+
 function gf.generate_deck(character)
 	local deck = {}
+
 	for i=1, character.shield_count do
 		table.insert(deck, character.shield)
 	end
@@ -19,13 +30,22 @@ function gf.generate_deck(character)
 	for i=1, character.special_count do
 		table.insert(deck, character.special)
 	end
+	
+	deck = gf.FYShuffle(deck)
+	for key, value in pairs(deck) do print (key,value.name) end
+
 	return deck
 end
 
 function gf.draw_card(deck)
-	local number = math.random(#deck)
-	local card = deck[number]
-	table.remove(deck, number)
+	--No longer need to random select card now that deck is shuffled on creation
+	--local number = math.random(#deck)
+	--local card = deck[number]
+	--table.remove(deck, number)
+
+	local card = deck[1]
+	table.remove(deck,1)
+	for key, value in pairs(deck) do print (key,value.name) end
 	return {deck=deck, card=card}
 end
 
