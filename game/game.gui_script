@@ -40,8 +40,30 @@ function on_message(self, message_id, message, sender)
 		--get what effects the card will have based on a win or loss
 		local player_result = outcome.player_result
 		local enemy_result = outcome.enemy_result
+
 		local player_card_actions = self.player_card[player_result]
 		local enemy_card_actions = self.enemy_card[enemy_result]
+
+		--[[
+		***************Below can be used to make specials neutralize the other card played. Not sure if this is good or bad design yet******
+		                          (To re-implement need to add "none" value back in gf.determine_outcome)
+		
+		local player_card_actions
+		local enemy_card_actions
+
+		if player_result == "none" then
+			player_card_actions = {dmg=0, heal=0, effect={}}
+		else
+			player_card_actions = self.player_card[player_result]
+		end
+
+		if enemy_result == "none" then
+			enemy_card_actions = {dmg=0, heal=0, effect={}}
+		else
+			enemy_card_actions = self.enemy_card[enemy_result]
+			pprint(enemy_card_actions)
+		end
+		--]]
 		
 		local player_health_change = player_card_actions.heal - enemy_card_actions.dmg
 		local player_effect_change = gf.get_effects("player", player_card_actions.effect, enemy_card_actions.effect)

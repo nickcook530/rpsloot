@@ -105,7 +105,7 @@ function gf.determine_outcome(player_card_type, enemy_card_type)
 		elseif enemy_card_type == "sword" then
 			return {player_result = "win", enemy_result = "loss"}
 		elseif enemy_card_type == "special" then
-			return {player_result = "loss", enemy_result = "win"}
+			return {player_result = "none", enemy_result = "win"}
 		else
 			print("NO RESULT FOUND FOR "..player_card_type)
 		end
