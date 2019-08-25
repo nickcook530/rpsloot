@@ -32,8 +32,7 @@ function gf.generate_deck(character)
 	end
 	
 	deck = gf.FYShuffle(deck)
-	for key, value in pairs(deck) do print (key,value.name) end
-
+	
 	return deck
 end
 
@@ -45,13 +44,14 @@ function gf.draw_card(deck)
 
 	local card = deck[1]
 	table.remove(deck,1)
-	for key, value in pairs(deck) do print (key,value.name) end
+	
 	return {deck=deck, card=card}
 end
 
 function gf.make_player_hand_node(card, position)
 	local card_tree = gui.clone_tree(gui.get_node("player_card"))
 	gui.set_text(card_tree[hash("card_text")], card.name)
+	gui.set_text(card_tree[hash("card_level")], "Lvl "..card.level)
 	gui.set_texture(card_tree[hash("card_image")], "player_card_textures")
 	gui.play_flipbook(card_tree[hash("card_image")], card.type)
 	card_tree["card_details"] = card --passed to game gui for logic
@@ -63,6 +63,7 @@ end
 function gf.make_enemy_hand_node(card, position)
 	local card_tree = gui.clone_tree(gui.get_node("enemy_card"))
 	gui.set_text(card_tree[hash("card_text")], card.name)
+	gui.set_text(card_tree[hash("card_level")], "Lvl "..card.level)
 	gui.set_texture(card_tree[hash("card_image")], "enemy_card_textures")
 	gui.play_flipbook(card_tree[hash("card_image")], card.type)
 	card_tree["card_details"] = card --passed to game gui for logic
@@ -77,7 +78,7 @@ function gf.initial_hand(character, deck, hand_positions)
 	for i=1, 3 do
 		local deck_and_card = gf.draw_card(deck)
 		local card = deck_and_card.card
-		local card_tree = nil
+		local card_tree
 		
 		if character == "player" then
 			card_tree = gf.make_player_hand_node(card, hand_positions[i])
@@ -105,7 +106,7 @@ function gf.determine_outcome(player_card_type, enemy_card_type)
 		elseif enemy_card_type == "sword" then
 			return {player_result = "win", enemy_result = "loss"}
 		elseif enemy_card_type == "special" then
-			return {player_result = "none", enemy_result = "win"}
+			return {player_result = "loss", enemy_result = "win"}
 		else
 			print("NO RESULT FOUND FOR "..player_card_type)
 		end

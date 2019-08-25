@@ -8,7 +8,7 @@ function init(self)
 
 	self.enemy = nil --left blank because game gui decides the level
 	self.effect_table = {}
-	self.hand_positions = {vmath.vector3(100, 810, 0), vmath.vector3(322, 810, 0), vmath.vector3(540, 810, 0)}
+	self.hand_positions = {vmath.vector3(105, 810, 0), vmath.vector3(320, 810, 0), vmath.vector3(535, 810, 0)}
 	self.hand = nil --left blank because game gui decides the level
 	
 	print("enemy gui init done")

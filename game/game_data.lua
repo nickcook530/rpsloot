@@ -35,7 +35,6 @@ if true then -- While in development I'll just recreate each time, in production
 		class.collection.shield = class.shield --build out class basic collection
 		class.collection.scroll = class.scroll
 		class.collection.sword = class.sword
-		pprint(class)
 	end
 
 	M.player = {current_class = M.classes["rogue"], current_level = 1}
